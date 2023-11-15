@@ -51,7 +51,8 @@ class Tweet:
         self.text = tweet_data["TweetText"]
         self.clean_text(["#", "@"])
         self.hashtags = []
-        self.arobase = []
+        self.arobases = []
+        # self.users = []
         # self.topics = []
         self.feelings = self.calculate_sentiment()
 
@@ -64,7 +65,7 @@ class Tweet:
 
     def extract_entities(self):
         """
-        Cette fonction permet d'extraire les entités du tweet (hashtags, arobase)
+        Cette fonction permet d'extraire les entités du tweet (hashtags, arobases)
         """
 
         # On sépare le texte en liste de mots
@@ -77,7 +78,7 @@ class Tweet:
             if word[0] == "#":  # Si le mot commence par un #
                 self.hashtags.append(word[1:])  # On ajoute le mot sans le # à la liste des hashtags
             elif word[0] == "@":  # Si le mot commence par un @
-                self.arobase.append(word[1:])  # On ajoute le mot sans le @ à la liste de l'arobase
+                self.arobases.append(word[1:])  # On ajoute le mot sans le @ à la liste des arobases
             text.remove(word)
 
         self.cleaned_text = " ".join(text)

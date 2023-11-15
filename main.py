@@ -31,10 +31,8 @@ def main(filename: str):
 
     # On écrit les données des tweets dans un fichier json
     create_data("zonedatterrissage", [tweet.__dict__ for tweet in tweets])  
-    
-    hashtags = count_hashtags(tweets)
 
-    make_model(hashtags)
+    make_model(tweets)
 
 
 if __name__ == "__main__":
