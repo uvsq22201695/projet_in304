@@ -6,7 +6,10 @@ DIRECTORY_NAME = "data"
 
 
 def create_file():
-    # On crée le dossier data s'il n'existe pas sinon on le vide
+    """
+    Cette fonction permet de créer le dossier qui contiendra les données brutes.
+    """
+
     if not os.path.exists(DIRECTORY_NAME):
         os.mkdir(DIRECTORY_NAME)
     else:
@@ -21,6 +24,5 @@ def create_data(name: str, data: list):
     :param data: Liste des données
     """
 
-    # On crée un fichier qui contient les données des tweets.
     with open(f"{DIRECTORY_NAME}/{name}.json", "w", encoding="UTF-8") as file:
         json.dump(data, file, indent=4)

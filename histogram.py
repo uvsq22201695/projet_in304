@@ -4,11 +4,11 @@ Y_LABEL = "Nombre de publications"
 X_LABEL = {
     "hashtags": "Hashtags",
     "users": "Noms d'utilisateurs",
-    "users_mentioned": "Noms d'utilisateurs mentionnés"
+    "users_mentioned": "Noms des utilisateurs mentionnés"
 }
 TITLE = {
     "hashtags": "Histogramme des hashtags les plus utilisés",
-    "users": "Histogramme des utilisateurs ayant le plus écrit",
+    "users": "Histogramme des utilisateurs étant le plus actif",
     "users_mentioned": "Histogramme des utilisateurs mentionnés le plus souvent"
 }
 
