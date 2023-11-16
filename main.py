@@ -1,12 +1,9 @@
-# Cellule qui gère les imports
-import json
-import spacy
 from model import *
-from gestion_fichiers import *
+from data import *
+from tweets import Tweet
 
 # nlp = spacy.load('en_core_web_sm')
 
-# Cellule qui gère la fonction main
 
 def main(filename: str):
     """
@@ -23,7 +20,7 @@ def main(filename: str):
     # On parcourt chaque tweet
     for tweet_data in data:
         tweet = Tweet(tweet_data)  # On crée un objet Tweet
-        tweet.extract_entities()  # On extrait les entités du tweet (hashtags, arobase, sentiment)
+        tweet.extract_entities()  # On extrait les entités du tweet (hashtags, utilisateur mentionné, sentiment)
         tweets.append(tweet)  # On ajoute le tweet à la liste des tweets
         
     # On crée le dossier data s'il n'existe pas sinon on le vide
@@ -32,6 +29,7 @@ def main(filename: str):
     # On écrit les données des tweets dans un fichier json
     create_data("zonedatterrissage", [tweet.__dict__ for tweet in tweets])  
 
+    # On crée l'interface graphique
     make_model(tweets)
 
 

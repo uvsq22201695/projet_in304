@@ -2,26 +2,26 @@ import re
 from textblob import TextBlob
 from random import choices
 
-
 # Dictionnaire des utilisateurs avec leur poids
 users_weight = {
-    "IainLJBrown": 15,
-    "byLilyV": 15,
-    "andi_staub": 15,
-    "YouTube": 5,
-    "unikuma_yukkuri": 5,
-    "TechTweet24h": 5,
-    "DeepLearn007": 5,
-    "JolaBurnett": 5,
-    "elonmusk": 8,
-    "data_nerd": 1,
-    "TechXplore_com": 4,
-    "ILASColumbia": 3,
-    "Indika_AI": 2,
-    "Entrepreneur": 2,
-    "Kevin_Jackson": 1,
-    "Kbuxton90": 9
+    "IainLJBrown": 15.0,
+    "byLilyV": 15.0,
+    "andi_staub": 15.0,
+    "Kbuxton90": 9.0,
+    "elonmusk": 8.0,
+    "YouTube": 5.0,
+    "unikuma_yukkuri": 5.0,
+    "TechTweet24h": 5.0,
+    "DeepLearn007": 5.0,
+    "JolaBurnett": 5.0,
+    "TechXplore_com": 4.0,
+    "ILASColumbia": 3.0,
+    "Indika_AI": 2.0,
+    "Entrepreneur": 2.0,
+    "Kevin_Jackson": 1.0,
+    "data_nerd": 1.0
 }
+
 
 def chose_username() -> str:
     """
@@ -29,8 +29,11 @@ def chose_username() -> str:
     :return username: Nom d'utilisateur
     """
 
+    # On convertit les valeurs du dictionnaire en liste
+    users_weight_list = list(users_weight.values())
+
     # On retourne un nom d'utilisateur aléatoire en fonction de la liste des utilisateurs
-    return choices(list(users_weight.keys()), weights=users_weight.values(), k=1)[0]
+    return choices(list(users_weight.keys()), weights=users_weight_list, k=1)[0]
 
 
 class Tweet:
@@ -51,8 +54,7 @@ class Tweet:
         self.text = tweet_data["TweetText"]
         self.clean_text(["#", "@"])
         self.hashtags = []
-        self.arobases = []
-        # self.users = []
+        self.arobase = []
         # self.topics = []
         self.feelings = self.calculate_sentiment()
 
@@ -78,11 +80,11 @@ class Tweet:
             if word[0] == "#":  # Si le mot commence par un #
                 self.hashtags.append(word[1:])  # On ajoute le mot sans le # à la liste des hashtags
             elif word[0] == "@":  # Si le mot commence par un @
-                self.arobases.append(word[1:])  # On ajoute le mot sans le @ à la liste des arobases
+                self.arobase.append(word[1:])  # On ajoute le mot sans le @ à la liste des arobases
             text.remove(word)
 
         self.cleaned_text = " ".join(text)
-        
+
         # doc = nlp(self.cleaned_text)
         # for token in doc:
         #     if "subj" in token.dep_:

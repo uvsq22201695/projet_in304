@@ -1,23 +1,29 @@
 import matplotlib.pyplot as plt
-# from hashtags import *
-# from arobases import *
-# from topics import *
-# from users import *
-from entities import *
 
-# # Cellule qui gère les données graphiques
+Y_LABEL = "Nombre de publications"
+X_LABEL = {
+    "hashtags": "Hashtags",
+    "users": "Noms d'utilisateurs",
+    "users_mentioned": "Noms d'utilisateurs mentionnés"
+}
+TITLE = {
+    "hashtags": "Histogramme des hashtags les plus utilisés",
+    "users": "Histogramme des utilisateurs ayant le plus écrit",
+    "users_mentioned": "Histogramme des utilisateurs mentionnés le plus souvent"
+}
 
-def create_histogram_topk(data: dict, val: str):
+
+def create_histogram_top(data: dict, val: str):
     """
     Cette fonction permet de créer un histogramme des hashtags les plus utilisés.
-    :param val: Chaines de caractères qui contient le nom du dictionnaire
     :param data: Dictionnaire des données
+    :param val: Chaines de caractères qui contient le nom du dictionnaire
     """
-    # On crée un histogramme des hashtags les plus utilisés.
-    fig = plt.figure(figsize=(20, 10))
-    plt.bar(list(key for key in data.keys() if key != "id"), list(value for key,value in data.items() if key != "id"))
 
-    plt.title(f"Histogramme des {val} les plus utilisés" if val != "users" else "Histogramme des utilisateurs ayant le plus écrit")
-    plt.xlabel(val[0].upper()+val[1:] if val != "users" else "Noms d'utilisateurs")
-    plt.ylabel("Nombre de publications")
+    fig = plt.figure(figsize=(20, 10))
+    plt.bar(list(data.keys()), list(data.values()))
+    plt.title(TITLE[val])
+    plt.xlabel(X_LABEL[val])
+    plt.ylabel(Y_LABEL)
+
     return fig
