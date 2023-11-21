@@ -121,7 +121,7 @@ def make_model(tweets):
                      "text",
                      live=True,
                      allow_flagging="never",
-                     title="Statistiques sur les publications"
+                     title="Statistiques sur le nombre de publications"
                      )
 
         gr.Interface(get_number_hashtag_publication,
