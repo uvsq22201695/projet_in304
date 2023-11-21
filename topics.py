@@ -1,4 +1,4 @@
-from tweets import Tweet
+# from tweets import Tweet
 # # Cellule qui gère les fonctions sur les topics
 # 
 # def count_topics(tweets: list) -> dict:
