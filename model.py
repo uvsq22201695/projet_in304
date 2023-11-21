@@ -35,7 +35,7 @@ def make_model(tweets):
     }
 
     # On crée l'interface graphique
-    with (gr.Blocks(theme=THEME) as interface):
+    with gr.Blocks(theme=THEME, css="index.css") as interface:
 
         def change_slider(choice: str, value: int):
             """
@@ -47,7 +47,7 @@ def make_model(tweets):
 
             current_val = value if value != 0 else 10  # On initialise la valeur du slider à 10 si elle est nulle
 
-            # On vérifie si l'utilisateur a coché la case "Masquer"
+            # On vérifie si l'utilisateur à cocher la case "Masquer"
             if choice == RADIO_CHOICES[-1]:
                 return {
                     slider_hashtags: gr.Slider(visible=False),  # On cache le slider
@@ -83,15 +83,11 @@ def make_model(tweets):
             :return: Nombre de publications
             """
 
-            if username == "":
-                return "# Veuillez entrer un nom d'utilisateur."
+            if username is None:
+                return ""
 
-            value = entities_users.get(username)
-
-            if value is None:
-                return "# L'utilisateur **" + username + "** n'a pas publié."
-            else:
-                return "# L'utilisateur **" + username + "** a publié **" + str(value["occurence"]) + "** fois."
+            return "L'utilisateur " + username + " a publié " + str(
+                entities_users.get(username)["occurence"]) + " fois."
 
         def get_number_hashtag_publication(hashtag: str):
             """
@@ -100,15 +96,13 @@ def make_model(tweets):
             :return: Nombre de publications
             """
 
-            if hashtag == "":
-                return "# Veuillez entrer un hashtag."
+            if hashtag is None:
+                return ""
 
-            value = entities_hashtags.get(hashtag)
+            return "Le hashtag " + hashtag + " a été utilisé " + str(
+                entities_hashtags.get(hashtag)["occurence"]) + " fois."
 
-            if value is None:
-                return "# Le hashtag **" + hashtag + "** n'a pas été utilisé."
-            else:
-                return "# Le hashtag **" + hashtag + "** a été utilisé **" + str(value["occurence"]) + "** fois."
+        gr.Markdown("# InPoDa", elem_id="title")  # Titre de l'interface graphique
 
         radio_top = gr.Radio(choices=RADIO_CHOICES, value="Masquer", label=RADIO_LABEL, info=RADIO_INFO)
         slider_hashtags = gr.Slider(visible=False)  # On crée le slider et on le cache
@@ -120,20 +114,25 @@ def make_model(tweets):
 
         gr.Interface(get_number_user_publication,
                      [
-                        gr.Dropdown(choices=list(entities_users.keys()), label="Nombre de publications par un utilisateur",
-                                    visible=True)
+                         gr.Dropdown(choices=list(entities_users.keys()),
+                                     label="Choisissez l'utilisateur dont vous souhaitez connaître le nombre de "
+                                           "publications")
                      ],
-                     gr.Markdown("# Veuillez entrer un nom d'utilisateur."),
-                     live=True
+                     "text",
+                     live=True,
+                     allow_flagging="never",
+                     title="Statistiques sur les publications"
                      )
 
         gr.Interface(get_number_hashtag_publication,
                      [
-                        gr.Dropdown(choices=list(entities_hashtags.keys()), label="Nombre de publications par hashtag",
-                                    visible=True)
+                         gr.Dropdown(choices=list(entities_hashtags.keys()),
+                                     label="Choisissez le hashtag dont vous souhaitez connaître le nombre de "
+                                           "publications")
                      ],
-                     gr.Markdown("# Veuillez entrer un hashtag."),
-                     live=True
+                     "text",
+                     live=True,
+                     allow_flagging="never"
                      )
 
-    interface.launch()
+        interface.launch()
