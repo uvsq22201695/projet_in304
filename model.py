@@ -17,6 +17,19 @@ choices = {
 
 THEME = "Base"
 
+css = """
+    .inpoda_title {
+        font-family: "Roboto", sans-serif;
+        text-align: center;
+    }
+    
+    .svelte-1gfkn6j {
+        font-family: "Roboto", sans-serif;
+        font-size: 20px;
+    }
+    
+"""
+
 
 def make_model(tweets):
     """
@@ -35,7 +48,7 @@ def make_model(tweets):
     }
 
     # On crée l'interface graphique
-    with gr.Blocks(theme=THEME, css="index.css") as interface:
+    with gr.Blocks(theme=THEME, css=css) as interface:
 
         def change_slider(choice: str, value: int):
             """
@@ -102,7 +115,7 @@ def make_model(tweets):
             return "Le hashtag " + hashtag + " a été utilisé " + str(
                 entities_hashtags.get(hashtag)["occurence"]) + " fois."
 
-        gr.Markdown("# InPoDa", elem_id="title")  # Titre de l'interface graphique
+        gr.Markdown("# InPoDa", elem_classes="inpoda_title")  # Titre de l'interface graphique
 
         radio_top = gr.Radio(choices=RADIO_CHOICES, value="Masquer", label=RADIO_LABEL, info=RADIO_INFO)
         slider_hashtags = gr.Slider(visible=False)  # On crée le slider et on le cache
@@ -112,16 +125,17 @@ def make_model(tweets):
         radio_top.change(change_slider, inputs=[radio_top, slider_hashtags], outputs=[slider_hashtags, plot_hashtags])
         slider_hashtags.change(change_histogram, inputs=[radio_top, slider_hashtags], outputs=plot_hashtags)
 
+        gr.Markdown("## Statistiques sur le nombre de publications", elem_classes="inpoda_title")
+
         gr.Interface(get_number_user_publication,
                      [
                          gr.Dropdown(choices=list(entities_users.keys()),
                                      label="Choisissez l'utilisateur dont vous souhaitez connaître le nombre de "
                                            "publications")
                      ],
-                     "text",
+                     gr.Textbox(max_lines=1),
                      live=True,
-                     allow_flagging="never",
-                     title="Statistiques sur le nombre de publications"
+                     allow_flagging="never"
                      )
 
         gr.Interface(get_number_hashtag_publication,
@@ -130,7 +144,7 @@ def make_model(tweets):
                                      label="Choisissez le hashtag dont vous souhaitez connaître le nombre de "
                                            "publications")
                      ],
-                     "text",
+                     gr.Textbox(max_lines=1),
                      live=True,
                      allow_flagging="never"
                      )
