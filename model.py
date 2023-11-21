@@ -120,9 +120,8 @@ def make_model(tweets):
 
         gr.Interface(get_number_user_publication,
                      [
-                         gr.Textbox(label="Nombre de publications par un utilisateur",
-                                    placeholder="Écrire le nom d'utilisateur ici", visible=True,
-                                    max_lines=1, autoscroll=False),
+                        gr.Dropdown(choices=list(entities_users.keys()), label="Nombre de publications par un utilisateur",
+                                    visible=True)
                      ],
                      gr.Markdown("# Veuillez entrer un nom d'utilisateur."),
                      live=True
@@ -130,9 +129,8 @@ def make_model(tweets):
 
         gr.Interface(get_number_hashtag_publication,
                      [
-                         gr.Textbox(label="Nombre de publications par hashtag",
-                                    placeholder="Écrire le hashtag ici", visible=True,
-                                    max_lines=1, autoscroll=False),
+                        gr.Dropdown(choices=list(entities_hashtags.keys()), label="Nombre de publications par hashtag",
+                                    visible=True)
                      ],
                      gr.Markdown("# Veuillez entrer un hashtag."),
                      live=True
