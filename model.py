@@ -5,7 +5,7 @@ from histogram import *
 
 RADIO_LABEL = "Top K"
 RADIO_INFO = "Cochez la case si vous souhaitez avoir le top K renseignés."
-RADIO_CHOICES = ["Hashtags", "Utilisateurs mentionnés", "Utilisateurs actifs"]
+RADIO_CHOICES = ["Hashtags", "Utilisateurs mentionnés", "Utilisateurs actifs", "Masquer"]
 SLIDER_LABEL = "K "
 SLIDER_INFO = "Veuillez choisir un nombre entre 2 et 50"
 
@@ -47,7 +47,14 @@ def make_model(tweets):
 
             current_val = value if value != 0 else 10  # On initialise la valeur du slider à 10 si elle est nulle
 
-            # if choice:  # On vérifie si l'utilisateur à cocher la case
+            # On vérifie si l'utilisateur a coché la case "Masquer"
+            if choice == RADIO_CHOICES[-1]:
+                return {
+                    slider_hashtags: gr.Slider(visible=False),  # On cache le slider
+                    plot_hashtags: gr.Plot(visible=False)  # On cache l'histogramme
+                }
+
+            # Sinon, on affiche le slider et l'histogramme correspondant à la cache cochée
             return {
                     slider_hashtags: gr.Slider(2, 50, value=current_val, step=1,
                                                label=SLIDER_LABEL + choice.lower(),
@@ -55,11 +62,6 @@ def make_model(tweets):
                     plot_hashtags: gr.Plot(create_histogram_top(topEntities(current_val, temp[choices[choice]]),
                                                                 choices[choice]), visible=True)
                 }
-            # else:  # Si l'utilisateur n'a pas coché la case
-            #     return {
-            #         slider_hashtags: gr.Slider(visible=False),  # On cache le slider
-            #         plot_hashtags: gr.Plot(visible=False)  # On cache l'histogramme
-            #     }
 
         def change_histogram(choice: str, value: int):
             """
