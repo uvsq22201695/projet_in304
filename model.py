@@ -74,6 +74,7 @@ def make_model(tweets):
                                                             choices[choice]), visible=True)
             }
 
+
         radio_top = gr.Radio(choices=RADIO_CHOICES, label=RADIO_LABEL, info=RADIO_INFO)  # On crée le radio
         slider_hashtags = gr.Slider(visible=False)  # On crée le slider et on le cache
         plot_hashtags = gr.Plot(visible=False)  # On crée l'histogramme et on le cache
