@@ -13,11 +13,10 @@ def count_entities(tweets: list, entity: str) -> dict:
         # On parcourt chaque entité du tweet si on ne cherche pas d'utilisateurs
         if entity != "users":
             for elem in eval(f"tweet.{entity}"):
-                count_entity(elem, entitydict, entity, tweet)
+                entitydict = count_entity(elem, entitydict, entity, tweet)
         else:
-            count_entity(tweet.user, entitydict, entity, tweet)
+            entitydict = count_entity(tweet.user, entitydict, entity, tweet)
 
-    # On retourne les hashtags avec leur nombre de publications
     return entitydict
 
 
@@ -27,7 +26,6 @@ def count_entity(element, D: dict, entity, tweet):
     :param element: Variable de l'élément observé
     :param D: Dictionnaire des entités avec leur nombre de publications
     :param entity: Chaîne de caractères de l'entité comptée
-    :param tweets: Liste des tweets
     :return D: Dictionnaire des entités avec leur nouveau nombre de publications
     """
     if element in D:  # Si l'élément est déjà dans le dictionnaire
