@@ -1,8 +1,7 @@
 from model import *
 from data import *
 from tweets import Tweet
-
-# nlp = spacy.load('en_core_web_sm')
+from circulardiagram import *
 
 
 def main(filename: str):
@@ -27,7 +26,7 @@ def main(filename: str):
     create_file()
 
     # On écrit les données des tweets dans un fichier json
-    create_data("zonedatterrissage", [tweet.__dict__ for tweet in tweets])  
+    create_data("zonedatterrissage", [tweet.__dict__ for tweet in tweets])
 
     # On crée l'interface graphique
     make_model(tweets)

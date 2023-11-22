@@ -149,4 +149,6 @@ def make_model(tweets):
                      allow_flagging="never"
                      )
 
+        gr.Markdown("## Analyse des sentiments", elem_classes="inpoda_title")
+
         interface.launch()

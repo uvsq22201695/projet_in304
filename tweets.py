@@ -55,15 +55,26 @@ class Tweet:
         self.clean_text(["#", "@"])
         self.hashtags = []
         self.arobase = []
-        # self.topics = []
-        self.feelings = self.calculate_sentiment()
+        self.polarity = self.calculate_polarity()
+        self.subjectivity = self.calculate_subjectivity()
 
-    def calculate_sentiment(self) -> str:
+    def calculate_polarity(self) -> str:
         """
-        Cette fonction permet de calculer le sentiment du tweet.
+        Cette fonction permet de calculer la polarité du tweet.
         :return bool: True si sentiment positif, False sinon
         """
-        return "Négatif" if TextBlob(self.text).sentiment.polarity < 0 else "Positif"
+        temp = TextBlob(self.text).sentiment.polarity
+
+        return "Négatif" if temp <= -1 else "Positif" if temp >= 1 else "Neutre"
+
+    def calculate_subjectivity(self) -> str:
+        """
+        Cette fonction permet de calculer la subjectivité du tweet.
+        :return bool: True si sentiment positif, False sinon
+        """
+        temp = TextBlob(self.text).sentiment.subjectivity
+
+        return "Objective" if temp < 0.5 else "Subjectif" if temp > 5 else "Neutre"
 
     def extract_entities(self):
         """
@@ -77,21 +88,13 @@ class Tweet:
         for word in text.copy():
             if word[0] not in ["#", "@"] or word[1:] == "":
                 continue
-            if word[0] == "#":  # Si le mot commence par un #
-                self.hashtags.append(word[1:])  # On ajoute le mot sans le # à la liste des hashtags
-            elif word[0] == "@":  # Si le mot commence par un @
-                self.arobase.append(word[1:])  # On ajoute le mot sans le @ à la liste des arobases
+            if word[0] == "#":
+                self.hashtags.append(word[1:])
+            elif word[0] == "@":
+                self.arobase.append(word[1:])
             text.remove(word)
 
         self.cleaned_text = " ".join(text)
-
-        # doc = nlp(self.cleaned_text)
-        # for token in doc:
-        #     if "subj" in token.dep_:
-        #         subtree = list(token.subtree)
-        #         start = subtree[0].i
-        #         end = subtree[-1].i + 1
-        #         self.topics.append(doc[start:end])
 
     def clean_text(self, excepted_char: list):
         """

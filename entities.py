@@ -1,56 +1,64 @@
-def count_entities(tweets: list, entity: str) -> dict:
+from tweets import Tweet
+
+USERS = "users"
+HASHTAGS = "hashtags"
+AROBASE = "arobase"
+OCCURENCE = "occurence"
+ID = "id"
+USERS_WHO_USED = "users_who_used"
+
+
+def count_entities(tweets: list, entity_type: str) -> dict:
     """
     Cette fonction permet de retourner les entités avec leur nombre de publications.
     :param tweets: Liste des tweets
-    :param entity: Chaîne de caractères de l'entité comptée
-    :return entitydict: Dictionnaire des entités avec leur nombre de publications
+    :param entity_type: Chaîne de caractères de l'entité comptée
+    :return entity_dict: Dictionnaire des entités avec leur nombre de publications
     """
 
-    entitydict = {}  # Dictionnaire des entités
+    entity_dict = {}  # Dictionnaire des entités
 
-    # On parcourt chaque tweet
     for tweet in tweets:
-        # On parcourt chaque entité du tweet si on ne cherche pas d'utilisateurs
-        if entity != "users":
-            for elem in eval(f"tweet.{entity}"):
-                count_entity(elem, entitydict, entity, tweet)
+
+        if entity_type == USERS:
+            entity_dict = count_entity(tweet.user, entity_dict, entity_type, tweet)
         else:
-            count_entity(tweet.user, entitydict, entity, tweet)
+            for elem in eval(f"tweet.{entity_type}"):
+                entity_dict = count_entity(elem, entity_dict, entity_type, tweet)
 
-    # On retourne les hashtags avec leur nombre de publications
-    return entitydict
+    return entity_dict
 
 
-def count_entity(element, D: dict, entity, tweet):
+def count_entity(entity: str, entity_dict: dict, entity_type: str, tweet: Tweet):
     """
     Cette fonction permet de retourner un élément d'une entité.
-    :param element: Variable de l'élément observé
-    :param D: Dictionnaire des entités avec leur nombre de publications
-    :param entity: Chaîne de caractères de l'entité comptée
-    :param tweets: Liste des tweets
-    :return D: Dictionnaire des entités avec leur nouveau nombre de publications
+    :param entity: Variable de l'élément observé
+    :param entity_dict: Dictionnaire des entités avec leur nombre de publications
+    :param entity_type: Chaîne de caractères de l'entité comptée
+    :param tweet: Liste des tweets
+    :return entity_dict: Dictionnaire des entités avec leur nouveau nombre de publications
     """
-    if element in D:  # Si l'élément est déjà dans le dictionnaire
-        D[element]["occurence"] += 1  # On incrémente le nombre d'occurence de l'élément
 
-        if entity in ["arobases", "users"]:  # Si l'on cherche des utilisateurs ou des arobases
-            D[element]["id"].append(tweet.id)  # On ajoute l'id du tweet à la liste des id de l'élément
+    if entity in entity_dict:
+        entity_dict[entity][OCCURENCE] += 1
 
-        if entity in ["arobases", "hashtags"]:  # Si l'on cherche des hashtags ou des arobases
-            if tweet.user not in D[element][
-                "users_who_used"]:  # Si l'utilisateur n'est pas déjà dans la liste des utilisateurs ayant utilisé l'élément
-                D[element]["users_who_used"].append(tweet.user)  # On ajoute l'utilisateur à la liste des utilisateurs
+        if entity_type in (AROBASE, USERS):
+            entity_dict[entity][ID].append(tweet.id)
 
-    else:  # Sinon
-        D[element] = {"occurence": 1}  # On initialise le nombre d'occurence de l'élément à 1
+        if entity_type in (AROBASE, HASHTAGS):
+            if tweet.user not in entity_dict[entity][USERS_WHO_USED]:
+                entity_dict[entity][USERS_WHO_USED].append(tweet.user)
 
-        if entity in ["arobases", "users"]:  # Si l'on cherche des utilisateurs ou des arobases
-            D[element]["id"] = [tweet.id]  # On ajoute l'id du tweet à la liste des id de l'élément
+    else:
+        entity_dict[entity] = {OCCURENCE: 1}
 
-        if entity in ["arobases", "hashtags"]:  # Si l'on cherche des hashtags ou des arobases
-            D[element]["users_who_used"] = [tweet.user]  # On ajoute l'utilisateur à la liste des utilisateurs
+        if entity_type in (AROBASE, USERS):
+            entity_dict[entity][ID] = [tweet.id]
 
-    return D
+        if entity_type in (AROBASE, HASHTAGS):
+            entity_dict[entity][USERS_WHO_USED] = [tweet.user]
+
+    return entity_dict
 
 
 def topEntities(k: int, entity: dict) -> dict:

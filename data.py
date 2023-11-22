@@ -10,11 +10,10 @@ def create_file():
     Cette fonction permet de créer le dossier qui contiendra les données brutes.
     """
 
-    if not os.path.exists(DIRECTORY_NAME):
-        os.mkdir(DIRECTORY_NAME)
-    else:
+    if os.path.exists(DIRECTORY_NAME):
         shutil.rmtree(DIRECTORY_NAME)
-        os.mkdir(DIRECTORY_NAME)
+
+    os.mkdir(DIRECTORY_NAME)
 
 
 def create_data(name: str, data: list):
