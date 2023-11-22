@@ -15,6 +15,8 @@ choices = {
     "Hashtags": "hashtags",
     "Utilisateurs actifs": "users",
     "Utilisateurs mentionnés": "users_mentioned",
+    "Polarité": "polarity",
+    "Subjectivité": "subjectivity"
 }
 
 THEME = "Base"
@@ -48,7 +50,9 @@ def make_model(tweets):
     temp = {
         "hashtags": entities_hashtags,
         "users": entities_users,
-        "users_mentioned": entities_users_mentioned
+        "users_mentioned": entities_users_mentioned,
+        "polarity": entities_polarity,
+        "subjectivity": entities_subjectivity
     }
 
     # On crée l'interface graphique
@@ -160,18 +164,14 @@ def make_model(tweets):
             :return: Sentiment
             """
 
-            if choice == SENTIMENT_CHOICES[0]:
+            if choice == SENTIMENT_CHOICES[-1]:
                 return {
-                    sentiment_plot: gr.Plot(create_circular_diagram(entities_polarity, "polarity"), visible=True)
-                }
-            elif choice == SENTIMENT_CHOICES[1]:
-                return {
-                    sentiment_plot: gr.Plot(create_circular_diagram(entities_subjectivity, "subjectivity"),
-                                            visible=True)
+                    sentiment_plot: gr.Plot(visible=False)
                 }
             else:
                 return {
-                    sentiment_plot: gr.Plot(visible=False)
+                    sentiment_plot: gr.Plot(create_circular_diagram(temp[choices[choice]], "subjectivity"),
+                                            visible=True)
                 }
 
         gr.Markdown("## Analyse des sentiments des utilisateurs", elem_classes="inpoda_title")
