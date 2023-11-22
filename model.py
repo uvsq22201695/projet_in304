@@ -181,4 +181,18 @@ def make_model(tweets):
         sentiment_plot = gr.Plot(visible=False)
         sentiment_radio.change(get_sentiment, inputs=sentiment_radio, outputs=sentiment_plot)
 
+        def user_tweets(username: str):
+            """
+            Cette fonction permet d'afficher les tweets d'un utilisateur.
+            :return: Tweets
+            """
+
+            return [[tweets[i].id, tweets[i].text] for i in range(len(tweets)) if tweets[i].user == username]
+
+        gr.Interface(user_tweets,
+                        gr.Dropdown(choices=list(entities_users.keys()),
+                                    label="Choisissez l'utilisateur dont vous souhaitez connaître les tweets"),
+                        gr.Dataframe(headers=["ID", "Texte"])
+        )
+
     interface.launch()
