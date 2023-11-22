@@ -188,10 +188,10 @@ def make_model(tweets):
         gr.Markdown("## Ensemble de tweets", elem_classes="inpoda_title")
 
         gr.Interface(user_tweets,
-                        gr.Dropdown(choices=list(entities_users.keys()),
-                                    label="Choisissez l'utilisateur dont vous souhaitez connaître les tweets"),
-                        gr.Dataframe(headers=["ID", "Texte"], height=250, show_label=False, label=""),
+                     gr.Dropdown(choices=list(entities_users.keys()),
+                                 label="Choisissez l'utilisateur dont vous souhaitez connaître les tweets"),
+                     gr.Dataframe(headers=["ID", "Texte"], height=250, show_label=False, label=""),
                      live=True,
-        )
+                     )
 
     interface.launch()
