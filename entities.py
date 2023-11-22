@@ -4,6 +4,8 @@ USERS = "users"
 HASHTAGS = "hashtags"
 AROBASE = "arobase"
 OCCURENCE = "occurence"
+POLARITY = "polarity"
+SUBJECTIVITY = "subjectivity"
 ID = "id"
 USERS_WHO_USED = "users_who_used"
 
@@ -22,6 +24,10 @@ def count_entities(tweets: list, entity_type: str) -> dict:
 
         if entity_type == USERS:
             entity_dict = count_entity(tweet.user, entity_dict, entity_type, tweet)
+        elif entity_type == POLARITY:
+            entity_dict = count_entity(tweet.polarity, entity_dict, entity_type, tweet)
+        elif entity_type == SUBJECTIVITY:
+            entity_dict = count_entity(tweet.subjectivity, entity_dict, entity_type, tweet)
         else:
             for elem in eval(f"tweet.{entity_type}"):
                 entity_dict = count_entity(elem, entity_dict, entity_type, tweet)
@@ -50,7 +56,9 @@ def count_entity(entity: str, entity_dict: dict, entity_type: str, tweet: Tweet)
                 entity_dict[entity][USERS_WHO_USED].append(tweet.user)
 
     else:
-        entity_dict[entity] = {OCCURENCE: 1}
+        entity_dict[entity] = {
+            OCCURENCE: 1
+        }
 
         if entity_type in (AROBASE, USERS):
             entity_dict[entity][ID] = [tweet.id]

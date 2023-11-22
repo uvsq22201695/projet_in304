@@ -28,6 +28,12 @@ def main(filename: str):
     # On écrit les données des tweets dans un fichier json
     create_data("zonedatterrissage", [tweet.__dict__ for tweet in tweets])
 
+    x = count_entities(tweets, "polarity")
+    create_circular_diagram(x, "polarity")
+
+    x = count_entities(tweets, "subjectivity")
+    create_circular_diagram(x, "subjectivity")
+
     # On crée l'interface graphique
     make_model(tweets)
 

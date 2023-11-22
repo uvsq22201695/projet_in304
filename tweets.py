@@ -65,7 +65,7 @@ class Tweet:
         """
         temp = TextBlob(self.text).sentiment.polarity
 
-        return "Négatif" if temp <= -1 else "Positif" if temp >= 1 else "Neutre"
+        return "Négatif" if temp < 0 else "Positif" if temp > 0 else "Neutre"
 
     def calculate_subjectivity(self) -> str:
         """
@@ -74,7 +74,7 @@ class Tweet:
         """
         temp = TextBlob(self.text).sentiment.subjectivity
 
-        return "Objective" if temp < 0.5 else "Subjectif" if temp > 5 else "Neutre"
+        return "Objectif" if temp < 0.5 else "Subjectif" if temp > 0.5 else "Neutre"
 
     def extract_entities(self):
         """
