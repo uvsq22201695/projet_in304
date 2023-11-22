@@ -136,22 +136,18 @@ def make_model(tweets):
         gr.Markdown("## Statistiques sur le nombre de publications", elem_classes="inpoda_title")
 
         gr.Interface(get_number_user_publication,
-                     [
-                         gr.Dropdown(choices=list(entities_users.keys()),
-                                     label="Choisissez l'utilisateur dont vous souhaitez connaître le nombre de "
-                                           "publications")
-                     ],
+                     gr.Dropdown(choices=list(entities_users.keys()),
+                                 label="Choisissez l'utilisateur dont vous souhaitez connaître le nombre de "
+                                       "publications"),
                      gr.Textbox(max_lines=1),
                      live=True,
                      allow_flagging="never"
                      )
 
         gr.Interface(get_number_hashtag_publication,
-                     [
-                         gr.Dropdown(choices=list(entities_hashtags.keys()),
-                                     label="Choisissez le hashtag dont vous souhaitez connaître le nombre de "
-                                           "publications")
-                     ],
+                     gr.Dropdown(choices=list(entities_hashtags.keys()),
+                                 label="Choisissez le hashtag dont vous souhaitez connaître le nombre de "
+                                       "publications"),
                      gr.Textbox(max_lines=1),
                      live=True,
                      allow_flagging="never"
@@ -189,10 +185,13 @@ def make_model(tweets):
 
             return [[tweets[i].id, tweets[i].text] for i in range(len(tweets)) if tweets[i].user == username]
 
+        gr.Markdown("## Ensemble de tweets", elem_classes="inpoda_title")
+
         gr.Interface(user_tweets,
                         gr.Dropdown(choices=list(entities_users.keys()),
                                     label="Choisissez l'utilisateur dont vous souhaitez connaître les tweets"),
-                        gr.Dataframe(headers=["ID", "Texte"])
+                        gr.Dataframe(headers=["ID", "Texte"], height=250, show_label=False, label=""),
+                     live=True,
         )
 
     interface.launch()
