@@ -1,7 +1,8 @@
-from model import *
-from data import *
+from model import make_model
+from data import create_data, create_file
 from tweets import Tweet
-from circulardiagram import *
+
+import json
 
 
 def main(filename: str):
@@ -21,18 +22,12 @@ def main(filename: str):
         tweet = Tweet(tweet_data)  # On crée un objet Tweet
         tweet.extract_entities()  # On extrait les entités du tweet (hashtags, utilisateur mentionné, sentiment)
         tweets.append(tweet)  # On ajoute le tweet à la liste des tweets
-        
+
     # On crée le dossier data s'il n'existe pas sinon on le vide
     create_file()
 
     # On écrit les données des tweets dans un fichier json
     create_data("zonedatterrissage", [tweet.__dict__ for tweet in tweets])
-
-    x = count_entities(tweets, "polarity")
-    create_circular_diagram(x, "polarity")
-
-    x = count_entities(tweets, "subjectivity")
-    create_circular_diagram(x, "subjectivity")
 
     # On crée l'interface graphique
     make_model(tweets)

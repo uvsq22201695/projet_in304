@@ -1,13 +1,15 @@
 import gradio as gr
 
-from entities import *
-from histogram import *
+from entities import count_entities, topEntities
+from histogram import create_histogram_top
+from circulardiagram import create_circular_diagram
 
 RADIO_LABEL = "Top K"
 RADIO_INFO = "Cochez la case si vous souhaitez avoir le top K renseignés."
 RADIO_CHOICES = ["Hashtags", "Utilisateurs mentionnés", "Utilisateurs actifs", "Masquer"]
 SLIDER_LABEL = "K "
 SLIDER_INFO = "Veuillez choisir un nombre entre 2 et 50"
+SENTIMENT_CHOICES = ["Polarité", "Subjectivité", "Masquer"]
 
 choices = {
     "Hashtags": "hashtags",
@@ -40,6 +42,8 @@ def make_model(tweets):
     entities_hashtags = count_entities(tweets, "hashtags")
     entities_users = count_entities(tweets, "users")
     entities_users_mentioned = count_entities(tweets, "arobase")
+    entities_polarity = count_entities(tweets, "polarity")
+    entities_subjectivity = count_entities(tweets, "subjectivity")
 
     temp = {
         "hashtags": entities_hashtags,
@@ -149,6 +153,32 @@ def make_model(tweets):
                      allow_flagging="never"
                      )
 
-        gr.Markdown("## Analyse des sentiments", elem_classes="inpoda_title")
+        def get_sentiment(choice: str):
+            """
+            Cette fonction permet d'afficher le sentiment des utilisateurs.
+            :param choice: Choix de l'utilisateur
+            :return: Sentiment
+            """
 
-        interface.launch()
+            if choice == SENTIMENT_CHOICES[0]:
+                return {
+                    sentiment_plot: gr.Plot(create_circular_diagram(entities_polarity, "polarity"), visible=True)
+                }
+            elif choice == SENTIMENT_CHOICES[1]:
+                return {
+                    sentiment_plot: gr.Plot(create_circular_diagram(entities_subjectivity, "subjectivity"),
+                                            visible=True)
+                }
+            else:
+                return {
+                    sentiment_plot: gr.Plot(visible=False)
+                }
+
+        gr.Markdown("## Analyse des sentiments des utilisateurs", elem_classes="inpoda_title")
+
+        sentiment_radio = gr.Radio(choices=SENTIMENT_CHOICES, value="Masquer",
+                                   label="Polarité ou subjectivité ?", info="Cocher la case correspondante.")
+        sentiment_plot = gr.Plot(visible=False)
+        sentiment_radio.change(get_sentiment, inputs=sentiment_radio, outputs=sentiment_plot)
+
+    interface.launch()
