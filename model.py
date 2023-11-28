@@ -1,4 +1,3 @@
-import gradio
 import gradio as gr
 
 from entities import count_entities, topEntities
@@ -58,9 +57,6 @@ def make_model(tweets):
 
     # On crée l'interface graphique
     with gr.Blocks(theme=THEME, css=css, title="InPoDa") as interface:
-
-        gr.FileExplorer("aitweets.json", label="Choisissez un fichier prédéfini")
-        gr.File(label="Choisissez un fichier personnalisé")
 
         def change_slider(choice: str, value: int):
             """
@@ -128,6 +124,9 @@ def make_model(tweets):
                 entities_hashtags.get(hashtag)["occurence"]) + " fois."
 
         gr.Markdown("# InPoDa", elem_classes="inpoda_title")  # Titre de l'interface graphique
+
+        gr.File(label="Choisissez un fichier à analyser (.json)", file_types=[".json"], visible=True)
+        gr.Button(value="Envoyez", variant="secondary", visible=True)
 
         radio_top = gr.Radio(choices=RADIO_CHOICES, value="Masquer", label=RADIO_LABEL, info=RADIO_INFO)
         slider_hashtags = gr.Slider(visible=False)  # On crée le slider et on le cache
