@@ -1,5 +1,5 @@
 from model import make_model
-from data import create_data, create_file
+from data import create_data, create_file, check
 from tweets import Tweet
 
 import json

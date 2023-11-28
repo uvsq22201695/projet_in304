@@ -25,3 +25,19 @@ def create_data(name: str, data: list):
 
     with open(f"{DIRECTORY_NAME}/{name}.json", "w", encoding="UTF-8") as file:
         json.dump(data, file, indent=4)
+
+def check(data: list):
+    """
+    Cette fonction permet de vérifier si les données sont valides, c'est-à-dire si dans le fichier json il y a bien :
+    - Un champ "TweetText" qui contient le texte du tweet
+    - Un champ "id" qui contient l'id du tweet
+    :param data: Dictionnaire contenant les données
+    """
+
+    # On parcourt chaque tweet
+    for tweet in data:
+        # On vérifie si le tweet contient le champ "TweetText" et "id"
+        if "TweetText" not in tweet.keys() or "id" not in tweet.keys():
+            return False
+
+    return True

@@ -1,3 +1,4 @@
+import gradio
 import gradio as gr
 
 from entities import count_entities, topEntities
@@ -56,7 +57,10 @@ def make_model(tweets):
     }
 
     # On crée l'interface graphique
-    with gr.Blocks(theme=THEME, css=css) as interface:
+    with gr.Blocks(theme=THEME, css=css, title="InPoDa") as interface:
+
+        gr.FileExplorer("aitweets.json", label="Choisissez un fichier prédéfini")
+        gr.File(label="Choisissez un fichier personnalisé")
 
         def change_slider(choice: str, value: int):
             """
@@ -192,6 +196,42 @@ def make_model(tweets):
                                  label="Choisissez l'utilisateur dont vous souhaitez connaître les tweets"),
                      gr.Dataframe(headers=["ID", "Texte"], height=250, show_label=False, label=""),
                      live=True,
+                     allow_flagging="never"
                      )
 
-    interface.launch()
+        def user_mentionned_tweets(username: str):
+            """
+            Cette fonction permet d'afficher les tweets où l'utilisateur est mentionné.
+            :return: Tweets
+            """
+
+            return [[tweets[i].id, tweets[i].text] for i in range(len(tweets)) if username in tweets[i].arobase]
+
+        gr.Interface(user_mentionned_tweets,
+                     gr.Dropdown(choices=list(entities_users.keys()),
+                                 label="Choisissez l'utilisateur dont vous souhaitez connaître les tweets où "
+                                       "l'utilisateur est mentionné"),
+                     gr.Dataframe(headers=["ID", "Texte"], height=250, show_label=False, label=""),
+                     live=True,
+                     allow_flagging="never"
+                     )
+
+        def user_mentionned_hashtags(hashtag: str):
+            """
+            Cette fonction permet d'afficher les tweets où le hashtag est mentionné.
+            :return: Tweets
+            """
+
+            return [[user] for user in entities_hashtags[hashtag]["users_who_used"]]
+
+        gr.Interface(user_mentionned_hashtags,
+                     gr.Dropdown(choices=list(entities_hashtags.keys()),
+                                 label="Choisissez le hashtag dont vous souhaitez connaître les "
+                                       "utilisateurs l'ayant utilisé"),
+                     gr.Dataset(components=[gr.Textbox(visible=False)], label="Utilisateurs ayant utilisé le hashtag",
+                                samples=[]),
+                     live=True,
+                     allow_flagging="never"
+                     )
+
+    interface.launch(favicon_path="favicon.png")
