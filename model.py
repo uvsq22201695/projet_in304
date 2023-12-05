@@ -3,6 +3,7 @@ import gradio as gr
 from entities import count_entities, topEntities
 from histogram import create_histogram_top
 from circulardiagram import create_circular_diagram
+from inits import initialize
 
 RADIO_LABEL = "Top K"
 RADIO_INFO = "Cochez la case si vous souhaitez avoir le top K renseignés."
@@ -35,28 +36,60 @@ css = """
 """
 
 
-def make_model(tweets):
+def make_model(tweets, filename: str):
     """
     Cette fonction permet de créer l'interface graphique.
     :param tweets: Liste des tweets
+    :param filename: Nom du fichier
     """
+    actual_file = filename
 
-    entities_hashtags = count_entities(tweets, "hashtags")
-    entities_users = count_entities(tweets, "users")
-    entities_users_mentioned = count_entities(tweets, "arobase")
-    entities_polarity = count_entities(tweets, "polarity")
-    entities_subjectivity = count_entities(tweets, "subjectivity")
+    def init_entities():
+        """
+        Cette fonction permet d'initialiser un dictionnaire contenant les hashtags, utilisateurs, arobases,
+        polarité, et subjectivité des tweets
+        """
+        entities_hashtags = count_entities(tweets, "hashtags")
+        entities_users = count_entities(tweets, "users")
+        entities_users_mentioned = count_entities(tweets, "arobase")
+        entities_polarity = count_entities(tweets, "polarity")
+        entities_subjectivity = count_entities(tweets, "subjectivity")
 
-    temp = {
-        "hashtags": entities_hashtags,
-        "users": entities_users,
-        "users_mentioned": entities_users_mentioned,
-        "polarity": entities_polarity,
-        "subjectivity": entities_subjectivity
-    }
+        return {
+            "hashtags": entities_hashtags,
+            "users": entities_users,
+            "users_mentioned": entities_users_mentioned,
+            "polarity": entities_polarity,
+            "subjectivity": entities_subjectivity
+        }
+
+    temp = init_entities()
 
     # On crée l'interface graphique
     with gr.Blocks(theme=THEME, css=css, title="InPoDa") as interface:
+
+        gr.Markdown("# InPoDa", elem_classes="inpoda_title")  # Titre de l'interface graphique
+
+        # On charge un différent fichier lorsque l'utilisateur le demande
+        def change_file_after_submitting(file: str):
+            nonlocal actual_file, tweets, temp
+
+            """
+            Cette fonction permet de changer le fichier après avoir cliqué sur le bouton "Envoyez".
+            :param file: Nom du fichier
+            :return: Nom du fichier
+            """
+
+            if file is None:
+                return
+            else:
+                actual_file = file
+                tweets = initialize(actual_file)
+                temp = init_entities()
+                return
+
+        f = gr.File(label="Choisissez un fichier à analyser (.json)", file_types=[".json"], visible=True)
+        btn = gr.Button(value="Envoyez", variant="secondary", visible=True)
 
         def change_slider(choice: str, value: int):
             """
@@ -108,7 +141,7 @@ def make_model(tweets):
                 return ""
 
             return "L'utilisateur " + username + " a publié " + str(
-                entities_users.get(username)["occurence"]) + " fois."
+                temp["users"].get(username)["occurence"]) + " fois."
 
         def get_number_hashtag_publication(hashtag: str):
             """
@@ -121,12 +154,7 @@ def make_model(tweets):
                 return ""
 
             return "Le hashtag " + hashtag + " a été utilisé " + str(
-                entities_hashtags.get(hashtag)["occurence"]) + " fois."
-
-        gr.Markdown("# InPoDa", elem_classes="inpoda_title")  # Titre de l'interface graphique
-
-        gr.File(label="Choisissez un fichier à analyser (.json)", file_types=[".json"], visible=True)
-        gr.Button(value="Envoyez", variant="secondary", visible=True)
+                temp["hashtags"].get(hashtag)["occurence"]) + " fois."
 
         radio_top = gr.Radio(choices=RADIO_CHOICES, value="Masquer", label=RADIO_LABEL, info=RADIO_INFO)
         slider_hashtags = gr.Slider(visible=False)  # On crée le slider et on le cache
@@ -139,7 +167,7 @@ def make_model(tweets):
         gr.Markdown("## Statistiques sur le nombre de publications", elem_classes="inpoda_title")
 
         gr.Interface(get_number_user_publication,
-                     gr.Dropdown(choices=list(entities_users.keys()),
+                     gr.Dropdown(choices=list(temp["users"].keys()),
                                  label="Choisissez l'utilisateur dont vous souhaitez connaître le nombre de "
                                        "publications"),
                      gr.Textbox(max_lines=1),
@@ -148,7 +176,7 @@ def make_model(tweets):
                      )
 
         gr.Interface(get_number_hashtag_publication,
-                     gr.Dropdown(choices=list(entities_hashtags.keys()),
+                     gr.Dropdown(choices=list(temp["hashtags"].keys()),
                                  label="Choisissez le hashtag dont vous souhaitez connaître le nombre de "
                                        "publications"),
                      gr.Textbox(max_lines=1),
@@ -191,7 +219,7 @@ def make_model(tweets):
         gr.Markdown("## Ensemble de tweets", elem_classes="inpoda_title")
 
         gr.Interface(user_tweets,
-                     gr.Dropdown(choices=list(entities_users.keys()),
+                     gr.Dropdown(choices=list(temp["users"].keys()),
                                  label="Choisissez l'utilisateur dont vous souhaitez connaître les tweets"),
                      gr.Dataframe(headers=["ID", "Texte"], height=250, show_label=False, label=""),
                      live=True,
@@ -207,7 +235,7 @@ def make_model(tweets):
             return [[tweets[i].id, tweets[i].text] for i in range(len(tweets)) if username in tweets[i].arobase]
 
         gr.Interface(user_mentionned_tweets,
-                     gr.Dropdown(choices=list(entities_users.keys()),
+                     gr.Dropdown(choices=list(temp["users"].keys()),
                                  label="Choisissez l'utilisateur dont vous souhaitez connaître les tweets où "
                                        "l'utilisateur est mentionné"),
                      gr.Dataframe(headers=["ID", "Texte"], height=250, show_label=False, label=""),
@@ -221,10 +249,10 @@ def make_model(tweets):
             :return: Tweets
             """
 
-            return [[user] for user in entities_hashtags[hashtag]["users_who_used"]]
+            return [[user] for user in temp["hashtags"][hashtag]["users_who_used"]]
 
         gr.Interface(user_mentionned_hashtags,
-                     gr.Dropdown(choices=list(entities_hashtags.keys()),
+                     gr.Dropdown(choices=list(temp["hashtags"].keys()),
                                  label="Choisissez le hashtag dont vous souhaitez connaître les "
                                        "utilisateurs l'ayant utilisé"),
                      gr.Dataset(components=[gr.Textbox(visible=False)], label="Utilisateurs ayant utilisé le hashtag",
@@ -232,5 +260,7 @@ def make_model(tweets):
                      live=True,
                      allow_flagging="never"
                      )
+
+        btn.click(change_file_after_submitting, inputs=[f], outputs=[])
 
     interface.launch(favicon_path="favicon.png")
