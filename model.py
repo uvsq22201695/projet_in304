@@ -73,20 +73,16 @@ def make_model(tweets, filename: str):
         # On charge un différent fichier lorsque l'utilisateur le demande
         def change_file_after_submitting(file: str):
             nonlocal actual_file, tweets, temp
-
             """
             Cette fonction permet de changer le fichier après avoir cliqué sur le bouton "Envoyez".
             :param file: Nom du fichier
             :return: Nom du fichier
             """
 
-            if file is None:
-                return
-            else:
+            if file is not None:
                 actual_file = file
                 tweets = initialize(actual_file)
                 temp = init_entities()
-                return
 
         f = gr.File(label="Choisissez un fichier à analyser (.json)", file_types=[".json"], visible=True)
         btn = gr.Button(value="Envoyez", variant="secondary", visible=True)
@@ -261,6 +257,6 @@ def make_model(tweets, filename: str):
                      allow_flagging="never"
                      )
 
-        btn.click(change_file_after_submitting, inputs=[f], outputs=[])
+        btn.click(change_file_after_submitting, inputs=[f], outputs=[]) # On change le fichier après avoir cliqué sur le bouton "Envoyez"
 
     interface.launch(favicon_path="favicon.png")
