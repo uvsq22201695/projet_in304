@@ -14,8 +14,11 @@ def create_circular_diagram(data: dict, val: str):
     """
 
     fig = plt.figure(figsize=(20, 10))
-    plt.pie(list(data[k]["occurence"] for k in data.keys()), labels=list(data.keys()), autopct='%1.1f%%', shadow=True, startangle=90)
+    plt.pie(list(data[k]["occurence"] for k in data.keys()),
+            labels=list(data.keys()),
+            autopct='%1.1f%%',
+            shadow=True,
+            startangle=90)
     plt.title(TITLE[val])
 
     return fig
-

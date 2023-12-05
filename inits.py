@@ -1,4 +1,4 @@
-from data import create_data, create_file, check
+from data import *
 from tweets import Tweet
 
 import json

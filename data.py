@@ -26,6 +26,7 @@ def create_data(name: str, data: list):
     with open(f"{DIRECTORY_NAME}/{name}.json", "w", encoding="UTF-8") as file:
         json.dump(data, file, indent=4)
 
+
 def check(data: list):
     """
     Cette fonction permet de vérifier si les données sont valides, c'est-à-dire si dans le fichier json il y a bien :

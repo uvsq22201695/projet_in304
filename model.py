@@ -279,6 +279,6 @@ def make_model(tweets, filename: str):
                      allow_flagging="never"
                      )
 
-        btn.click(change_file_after_submitting, inputs=[f], outputs=[]) # On change le fichier après avoir cliqué sur le bouton "Envoyez"
+        btn.click(change_file_after_submitting, inputs=[f])  # On change le fichier une fois le bouton cliqué
 
     interface.launch(favicon_path="favicon.png")
