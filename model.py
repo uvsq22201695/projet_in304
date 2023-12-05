@@ -68,7 +68,23 @@ def make_model(tweets, filename: str):
     # On crée l'interface graphique
     with gr.Blocks(theme=THEME, css=css, title="InPoDa") as interface:
 
-        gr.Markdown("# InPoDa", elem_classes="inpoda_title")  # Titre de l'interface graphique
+        # def create_widgets(is_file: bool):
+        #     if is_file:
+        #         pass
+        #     else:
+        #         radio_top = None
+        #         slider_hashtags = None
+        #         plot_hashtags = None
+        #         markdown1 = None
+        #         interface1 = None
+        #         interface2 = None
+        #         markdown2 = None
+        #         sentiment_radio = None
+        #         sentiment_plot = None
+        #         markdown3 = None
+        #         interface3 = None
+        #         interface4 = None
+        #         interface5 = None
 
         # On charge un différent fichier lorsque l'utilisateur le demande
         def change_file_after_submitting(file: str):
@@ -79,13 +95,14 @@ def make_model(tweets, filename: str):
             :return: Nom du fichier
             """
 
-            if file is not None:
+            if file is None:
+                # create_widgets(False)
+                return
+            else:
                 actual_file = file
                 tweets = initialize(actual_file)
                 temp = init_entities()
-
-        f = gr.File(label="Choisissez un fichier à analyser (.json)", file_types=[".json"], visible=True)
-        btn = gr.Button(value="Envoyez", variant="secondary", visible=True)
+                # create_widgets(True)
 
         def change_slider(choice: str, value: int):
             """
@@ -152,6 +169,52 @@ def make_model(tweets, filename: str):
             return "Le hashtag " + hashtag + " a été utilisé " + str(
                 temp["hashtags"].get(hashtag)["occurence"]) + " fois."
 
+        def get_sentiment(choice: str):
+            """
+            Cette fonction permet d'afficher le sentiment des utilisateurs.
+            :param choice: Choix de l'utilisateur
+            :return: Sentiment
+            """
+
+            if choice == SENTIMENT_CHOICES[-1]:
+                return {
+                    sentiment_plot: gr.Plot(visible=False)
+                }
+            else:
+                return {
+                    sentiment_plot: gr.Plot(create_circular_diagram(temp[choices[choice]], "subjectivity"),
+                                            visible=True)
+                }
+
+        def user_tweets(username: str):
+            """
+            Cette fonction permet d'afficher les tweets d'un utilisateur.
+            :return: Tweets
+            """
+
+            return [[tweets[i].id, tweets[i].text] for i in range(len(tweets)) if tweets[i].user == username]
+
+        def user_mentionned_tweets(username: str):
+            """
+            Cette fonction permet d'afficher les tweets où l'utilisateur est mentionné.
+            :return: Tweets
+            """
+
+            return [[tweets[i].id, tweets[i].text] for i in range(len(tweets)) if username in tweets[i].arobase]
+
+        def user_mentionned_hashtags(hashtag: str):
+            """
+            Cette fonction permet d'afficher les tweets où le hashtag est mentionné.
+            :return: Tweets
+            """
+
+            return [[user] for user in temp["hashtags"][hashtag]["users_who_used"]]
+
+        gr.Markdown("# InPoDa", elem_classes="inpoda_title")  # Titre de l'interface graphique
+
+        f = gr.File(label="Choisissez un fichier à analyser (.json)", file_types=[".json"], visible=True)
+        btn = gr.Button(value="Envoyez", variant="secondary", visible=True)
+
         radio_top = gr.Radio(choices=RADIO_CHOICES, value="Masquer", label=RADIO_LABEL, info=RADIO_INFO)
         slider_hashtags = gr.Slider(visible=False)  # On crée le slider et on le cache
         plot_hashtags = gr.Plot(visible=False)  # On crée l'histogramme et on le cache
@@ -180,37 +243,12 @@ def make_model(tweets, filename: str):
                      allow_flagging="never"
                      )
 
-        def get_sentiment(choice: str):
-            """
-            Cette fonction permet d'afficher le sentiment des utilisateurs.
-            :param choice: Choix de l'utilisateur
-            :return: Sentiment
-            """
-
-            if choice == SENTIMENT_CHOICES[-1]:
-                return {
-                    sentiment_plot: gr.Plot(visible=False)
-                }
-            else:
-                return {
-                    sentiment_plot: gr.Plot(create_circular_diagram(temp[choices[choice]], "subjectivity"),
-                                            visible=True)
-                }
-
         gr.Markdown("## Analyse des sentiments des utilisateurs", elem_classes="inpoda_title")
 
         sentiment_radio = gr.Radio(choices=SENTIMENT_CHOICES, value="Masquer",
                                    label="Polarité ou subjectivité ?", info="Cocher la case correspondante.")
         sentiment_plot = gr.Plot(visible=False)
         sentiment_radio.change(get_sentiment, inputs=sentiment_radio, outputs=sentiment_plot)
-
-        def user_tweets(username: str):
-            """
-            Cette fonction permet d'afficher les tweets d'un utilisateur.
-            :return: Tweets
-            """
-
-            return [[tweets[i].id, tweets[i].text] for i in range(len(tweets)) if tweets[i].user == username]
 
         gr.Markdown("## Ensemble de tweets", elem_classes="inpoda_title")
 
@@ -222,14 +260,6 @@ def make_model(tweets, filename: str):
                      allow_flagging="never"
                      )
 
-        def user_mentionned_tweets(username: str):
-            """
-            Cette fonction permet d'afficher les tweets où l'utilisateur est mentionné.
-            :return: Tweets
-            """
-
-            return [[tweets[i].id, tweets[i].text] for i in range(len(tweets)) if username in tweets[i].arobase]
-
         gr.Interface(user_mentionned_tweets,
                      gr.Dropdown(choices=list(temp["users"].keys()),
                                  label="Choisissez l'utilisateur dont vous souhaitez connaître les tweets où "
@@ -238,14 +268,6 @@ def make_model(tweets, filename: str):
                      live=True,
                      allow_flagging="never"
                      )
-
-        def user_mentionned_hashtags(hashtag: str):
-            """
-            Cette fonction permet d'afficher les tweets où le hashtag est mentionné.
-            :return: Tweets
-            """
-
-            return [[user] for user in temp["hashtags"][hashtag]["users_who_used"]]
 
         gr.Interface(user_mentionned_hashtags,
                      gr.Dropdown(choices=list(temp["hashtags"].keys()),
