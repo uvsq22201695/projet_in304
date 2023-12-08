@@ -35,6 +35,10 @@ def check(data: list):
     :param data: Dictionnaire contenant les données
     """
 
+    # Si le fichier est vide
+    if len(data) == 0:
+        return False
+
     # On parcourt chaque tweet
     for tweet in data:
         # On vérifie si le tweet contient le champ "TweetText" et "id"

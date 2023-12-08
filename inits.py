@@ -1,19 +1,16 @@
 from data import *
 from tweets import Tweet
+import gradio as gr
 
 import json
 
 
-def initialize(filename: str):
+def initialize(data: list):
     """
     Fonction permettant d'initialiser les données des tweets
-    :param filename: Nom du fichier json contenant les tweets
+    :param data: Liste des données
     """
     tweets = []  # Liste des tweets
-
-    # On ouvre le fichier json et on le charge dans une liste de dictionnaire
-    with open(filename, "r", encoding="UTF-8") as file:
-        data = [json.loads(line) for line in file]
 
     # On parcourt chaque tweet
     for tweet_data in data:

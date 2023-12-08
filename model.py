@@ -1,9 +1,12 @@
+import json
+
 import gradio as gr
 
 from entities import count_entities, topEntities
 from histogram import create_histogram_top
 from circulardiagram import create_circular_diagram
 from inits import initialize
+from data import check
 
 RADIO_LABEL = "Top K"
 RADIO_INFO = "Cochez la case si vous souhaitez avoir le top K renseignés."
@@ -36,13 +39,11 @@ css = """
 """
 
 
-def make_model(tweets, filename: str):
+def make_model(tweets):
     """
     Cette fonction permet de créer l'interface graphique.
     :param tweets: Liste des tweets
-    :param filename: Nom du fichier
     """
-    actual_file = filename
 
     def init_entities():
         """
@@ -65,44 +66,30 @@ def make_model(tweets, filename: str):
 
     temp = init_entities()
 
-    # On crée l'interface graphique
     with gr.Blocks(theme=THEME, css=css, title="InPoDa") as interface:
+        """
+        Cette "fonction" permet de créer l'interface graphique.
+        """
 
-        # def create_widgets(is_file: bool):
-        #     if is_file:
-        #         pass
-        #     else:
-        #         radio_top = None
-        #         slider_hashtags = None
-        #         plot_hashtags = None
-        #         markdown1 = None
-        #         interface1 = None
-        #         interface2 = None
-        #         markdown2 = None
-        #         sentiment_radio = None
-        #         sentiment_plot = None
-        #         markdown3 = None
-        #         interface3 = None
-        #         interface4 = None
-        #         interface5 = None
-
-        # On charge un différent fichier lorsque l'utilisateur le demande
         def change_file_after_submitting(file: str):
-            nonlocal actual_file, tweets, temp
+            nonlocal tweets, temp
             """
             Cette fonction permet de changer le fichier après avoir cliqué sur le bouton "Envoyez".
             :param file: Nom du fichier
             :return: Nom du fichier
             """
 
-            if file is None:
-                # create_widgets(False)
-                return
+            # On ouvre le fichier json et on le charge dans une liste de dictionnaire
+            with open(file, "r", encoding="UTF-8") as file:
+                data = [json.loads(line) for line in file]
+
+            if not check(data):
+                gr.Warning("Les données ne sont pas valides")
             else:
-                actual_file = file
-                tweets = initialize(actual_file)
+                gr.Info("Les données sont valides et en cours d'initialisation")
+                tweets = initialize(data)
                 temp = init_entities()
-                # create_widgets(True)
+                gr.Info("Les données sont initialisées")
 
         def change_slider(choice: str, value: int):
             """
@@ -215,11 +202,14 @@ def make_model(tweets, filename: str):
         f = gr.File(label="Choisissez un fichier à analyser (.json)", file_types=[".json"], visible=True)
         btn = gr.Button(value="Envoyez", variant="secondary", visible=True)
 
+        btn.click(change_file_after_submitting, inputs=[f])
+
+        gr.Markdown("---", elem_classes="inpoda_title")
+
         radio_top = gr.Radio(choices=RADIO_CHOICES, value="Masquer", label=RADIO_LABEL, info=RADIO_INFO)
         slider_hashtags = gr.Slider(visible=False)  # On crée le slider et on le cache
         plot_hashtags = gr.Plot(visible=False)  # On crée l'histogramme et on le cache
 
-        # On regarde si une action a été effectuée sur le radio ou le slider
         radio_top.change(change_slider, inputs=[radio_top, slider_hashtags], outputs=[slider_hashtags, plot_hashtags])
         slider_hashtags.change(change_histogram, inputs=[radio_top, slider_hashtags], outputs=plot_hashtags)
 
@@ -278,7 +268,5 @@ def make_model(tweets, filename: str):
                      live=True,
                      allow_flagging="never"
                      )
-
-        btn.click(change_file_after_submitting, inputs=[f])  # On change le fichier une fois le bouton cliqué
 
     interface.launch(favicon_path="favicon.png")
