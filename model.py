@@ -79,6 +79,9 @@ def make_model(tweets):
             :return: Nom du fichier
             """
 
+            if file is None:
+                return gr.Warning("Veuillez choisir un fichier à analyser")
+
             # On ouvre le fichier json et on le charge dans une liste de dictionnaire
             with open(file, "r", encoding="UTF-8") as file:
                 data = [json.loads(line) for line in file]
@@ -195,14 +198,33 @@ def make_model(tweets):
             :return: Tweets
             """
 
+            if hashtag is None:
+                return []
+
             return [[user] for user in temp["hashtags"][hashtag]["users_who_used"]]
+
+        def user_mentionned_user(username: str):
+            """
+            Cette fonction permet d'afficher les utilisateurs mentionnés par l'utilisateur.
+            :return: Tweets
+            """
+
+            if username is None:
+                return []
+
+            mention_user = []
+
+            for user in temp["users_mentioned"]:
+                if username in temp["users_mentioned"][user]["users_who_used"]:
+                    if user not in mention_user:
+                        mention_user.append([user])
+
+            return mention_user
 
         gr.Markdown("# InPoDa", elem_classes="inpoda_title")  # Titre de l'interface graphique
 
         f = gr.File(label="Choisissez un fichier à analyser (.json)", file_types=[".json"], visible=True)
         btn = gr.Button(value="Envoyez", variant="secondary", visible=True)
-
-        btn.click(change_file_after_submitting, inputs=[f])
 
         gr.Markdown("---", elem_classes="inpoda_title")
 
@@ -263,10 +285,22 @@ def make_model(tweets):
                      gr.Dropdown(choices=list(temp["hashtags"].keys()),
                                  label="Choisissez le hashtag dont vous souhaitez connaître les "
                                        "utilisateurs l'ayant utilisé"),
-                     gr.Dataset(components=[gr.Textbox(visible=False)], label="Utilisateurs ayant utilisé le hashtag",
-                                samples=[]),
+                     gr.Dataframe(headers=["Utilisateur(s)"], label="Utilisateurs ayant utilisé le hashtag",
+                                  height=250),
                      live=True,
                      allow_flagging="never"
                      )
+
+        gr.Interface(user_mentionned_user,
+                     gr.Dropdown(choices=list(temp["users"].keys()),
+                                 label="Choisissez l'utilisateur dont vous souhaitez connaître les utilisateurs qu'il "
+                                       "a mentionné"),
+                     gr.Dataframe(headers=["Utilisateur(s)"], label="Utilisateurs mentionné par l'utilisateur choisi",
+                                  height=250),
+                     live=True,
+                     allow_flagging="never"
+                     )
+
+        btn.click(change_file_after_submitting, inputs=[f])
 
     interface.launch(favicon_path="favicon.png")
