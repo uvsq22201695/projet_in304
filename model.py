@@ -273,14 +273,48 @@ def make_model(tweets):
             """
 
             if file is None:
-                return gr.Warning("Veuillez choisir un fichier à analyser")
+                gr.Warning("Veuillez choisir un fichier à analyser. Restauration des données précédentes.")
+                return {
+                    radio_top: radio_top,
+                    user_publications_dropdown: user_publications_dropdown,
+                    user_publications_textbox: user_publications_textbox,
+                    hashtag_publications_dropdown: hashtag_publications_dropdown,
+                    hashtag_publications_textbox: hashtag_publications_textbox,
+                    sentiment_radio: sentiment_radio,
+                    user_tweets_dropdown: user_tweets_dropdown,
+                    user_tweets_dataframe: user_tweets_dataframe,
+                    user_mentionned_tweets_dropdown: user_mentionned_tweets_dropdown,
+                    user_mentionned_tweets_dataframe: user_mentionned_tweets_dataframe,
+                    user_mentionned_hashtags_dropdown: user_mentionned_hashtags_dropdown,
+                    user_mentionned_hashtags_dataset: user_mentionned_hashtags_dataset,
+                    user_mentionned_user_dropdown: user_mentionned_user_dropdown,
+                    user_mentionned_user_dataset: user_mentionned_user_dataset,
+                    file_download: file_download
+                }
 
             # On ouvre le fichier json et on le charge dans une liste de dictionnaire
             with open(file, "r", encoding="UTF-8") as file:
                 data = [json.loads(line) for line in file]
 
             if not check(data):
-                gr.Warning("Les données ne sont pas valides")
+                gr.Warning("Les données ne sont pas valides. Restauration des données précédentes.")
+                return {
+                    radio_top: radio_top,
+                    user_publications_dropdown: user_publications_dropdown,
+                    user_publications_textbox: user_publications_textbox,
+                    hashtag_publications_dropdown: hashtag_publications_dropdown,
+                    hashtag_publications_textbox: hashtag_publications_textbox,
+                    sentiment_radio: sentiment_radio,
+                    user_tweets_dropdown: user_tweets_dropdown,
+                    user_tweets_dataframe: user_tweets_dataframe,
+                    user_mentionned_tweets_dropdown: user_mentionned_tweets_dropdown,
+                    user_mentionned_tweets_dataframe: user_mentionned_tweets_dataframe,
+                    user_mentionned_hashtags_dropdown: user_mentionned_hashtags_dropdown,
+                    user_mentionned_hashtags_dataset: user_mentionned_hashtags_dataset,
+                    user_mentionned_user_dropdown: user_mentionned_user_dropdown,
+                    user_mentionned_user_dataset: user_mentionned_user_dataset,
+                    file_download: file_download
+                }
             else:
                 gr.Info("Les données sont valides et en cours d'initialisation")
                 tweets = initialize(data)
@@ -289,27 +323,19 @@ def make_model(tweets):
 
                 return {
                     radio_top: gr.Radio(value="Masquer"),
-
                     user_publications_dropdown: gr.Dropdown(choices=list(temp["users"].keys()), value=None),
                     user_publications_textbox: None,
-
                     hashtag_publications_dropdown: gr.Dropdown(choices=list(temp["hashtags"].keys()), value=None),
                     hashtag_publications_textbox: None,
-
                     sentiment_radio: gr.Radio(value="Masquer"),
-
                     user_tweets_dropdown: gr.Dropdown(choices=list(temp["users"].keys()), value=None),
                     user_tweets_dataframe: None,
-
                     user_mentionned_tweets_dropdown: gr.Dropdown(choices=list(temp["users"].keys()), value=None),
                     user_mentionned_tweets_dataframe: None,
-
                     user_mentionned_hashtags_dropdown: gr.Dropdown(choices=list(temp["hashtags"].keys()), value=None),
                     user_mentionned_hashtags_dataset: [],
-
                     user_mentionned_user_dropdown: gr.Dropdown(choices=list(temp["users"].keys()), value=None),
                     user_mentionned_user_dataset: [],
-
                     file_download: gr.File(file_types=[".json"], value="data/zonedatterrissage.json"),
                 }
 
