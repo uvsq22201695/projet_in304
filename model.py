@@ -71,29 +71,6 @@ def make_model(tweets):
         Cette "fonction" permet de créer l'interface graphique.
         """
 
-        def change_file_after_submitting(file: str):
-            nonlocal tweets, temp
-            """
-            Cette fonction permet de changer le fichier après avoir cliqué sur le bouton "Envoyez".
-            :param file: Nom du fichier
-            :return: Nom du fichier
-            """
-
-            if file is None:
-                return gr.Warning("Veuillez choisir un fichier à analyser")
-
-            # On ouvre le fichier json et on le charge dans une liste de dictionnaire
-            with open(file, "r", encoding="UTF-8") as file:
-                data = [json.loads(line) for line in file]
-
-            if not check(data):
-                gr.Warning("Les données ne sont pas valides")
-            else:
-                gr.Info("Les données sont valides et en cours d'initialisation")
-                tweets = initialize(data)
-                temp = init_entities()
-                gr.Info("Les données sont initialisées")
-
         def change_slider(choice: str, value: int):
             """
             Cette fonction permet d'afficher le slider et l'histogramme en fonction du choix de l'utilisateur.
@@ -221,39 +198,160 @@ def make_model(tweets):
 
             return mention_user
 
+        def user_publications_clear():
+            """
+            Cette fonction permet d'effacer le contenu du textbox.
+            :return: Textbox
+            """
+
+            return {
+                user_publications_dropdown: None,
+                user_publications_textbox: None
+            }
+
+        def hashtag_publications_clear():
+            """
+            Cette fonction permet d'effacer le contenu du textbox.
+            :return: Textbox
+            """
+
+            return {
+                hashtag_publications_dropdown: None,
+                hashtag_publications_textbox: None
+            }
+
+        def user_tweets_clear():
+            """
+            Cette fonction permet d'effacer le contenu du textbox.
+            :return: Textbox
+            """
+
+            return {
+                user_tweets_dropdown: None,
+                user_tweets_dataframe: None
+            }
+
+        def user_mentionned_tweets_clear():
+            """
+            Cette fonction permet d'effacer le contenu du textbox.
+            :return: Textbox
+            """
+
+            return {
+                user_mentionned_tweets_dropdown: None,
+                user_mentionned_tweets_dataframe: None
+            }
+
+        def user_mentionned_hashtags_clear():
+            """
+            Cette fonction permet d'effacer le contenu du textbox.
+            :return: Textbox
+            """
+
+            return {
+                user_mentionned_hashtags_dropdown: None,
+                user_mentionned_hashtags_dataset: []
+            }
+
+        def user_mentionned_user_clear():
+            """
+            Cette fonction permet d'effacer le contenu du textbox.
+            :return: Textbox
+            """
+
+            return {
+                user_mentionned_user_dropdown: None,
+                user_mentionned_user_dataset: []
+            }
+
+        def change_file_after_submitting(file: str):
+            nonlocal tweets, temp
+            """
+            Cette fonction permet de changer le fichier après avoir cliqué sur le bouton "Envoyez".
+            :param file: Nom du fichier
+            :return: Nom du fichier
+            """
+
+            if file is None:
+                return gr.Warning("Veuillez choisir un fichier à analyser")
+
+            # On ouvre le fichier json et on le charge dans une liste de dictionnaire
+            with open(file, "r", encoding="UTF-8") as file:
+                data = [json.loads(line) for line in file]
+
+            if not check(data):
+                gr.Warning("Les données ne sont pas valides")
+            else:
+                gr.Info("Les données sont valides et en cours d'initialisation")
+                tweets = initialize(data)
+                temp = init_entities()
+                gr.Info("Les données sont initialisées")
+
+                return {
+                    radio_top: gr.Radio(value="Masquer"),
+
+                    user_publications_dropdown: gr.Dropdown(choices=list(temp["users"].keys()), value=None),
+                    user_publications_textbox: None,
+
+                    hashtag_publications_dropdown: gr.Dropdown(choices=list(temp["hashtags"].keys()), value=None),
+                    hashtag_publications_textbox: None,
+
+                    sentiment_radio: gr.Radio(value="Masquer"),
+
+                    user_tweets_dropdown: gr.Dropdown(choices=list(temp["users"].keys()), value=None),
+                    user_tweets_dataframe: None,
+
+                    user_mentionned_tweets_dropdown: gr.Dropdown(choices=list(temp["users"].keys()), value=None),
+                    user_mentionned_tweets_dataframe: None,
+
+                    user_mentionned_hashtags_dropdown: gr.Dropdown(choices=list(temp["hashtags"].keys()), value=None),
+                    user_mentionned_hashtags_dataset: [],
+
+                    user_mentionned_user_dropdown: gr.Dropdown(choices=list(temp["users"].keys()), value=None),
+                    user_mentionned_user_dataset: [],
+
+                    file_download: gr.File(file_types=[".json"], value="data/zonedatterrissage.json"),
+                }
+
         gr.Markdown("# InPoDa", elem_classes="inpoda_title")  # Titre de l'interface graphique
 
-        f = gr.File(label="Choisissez un fichier à analyser (.json)", file_types=[".json"], visible=True)
+        f = gr.File(label="Choisissez un fichier à analyser (.json)", file_types=[".json"], value="aitweets.json")
         btn = gr.Button(value="Envoyez", variant="secondary", visible=True)
 
         gr.Markdown("---", elem_classes="inpoda_title")
 
         radio_top = gr.Radio(choices=RADIO_CHOICES, value="Masquer", label=RADIO_LABEL, info=RADIO_INFO)
-        slider_hashtags = gr.Slider(visible=False)  # On crée le slider et on le cache
-        plot_hashtags = gr.Plot(visible=False)  # On crée l'histogramme et on le cache
+        slider_hashtags = gr.Slider(visible=False)
+        plot_hashtags = gr.Plot(visible=False)
 
         radio_top.change(change_slider, inputs=[radio_top, slider_hashtags], outputs=[slider_hashtags, plot_hashtags])
         slider_hashtags.change(change_histogram, inputs=[radio_top, slider_hashtags], outputs=plot_hashtags)
 
         gr.Markdown("## Statistiques sur le nombre de publications", elem_classes="inpoda_title")
 
-        gr.Interface(get_number_user_publication,
-                     gr.Dropdown(choices=list(temp["users"].keys()),
-                                 label="Choisissez l'utilisateur dont vous souhaitez connaître le nombre de "
-                                       "publications"),
-                     gr.Textbox(max_lines=1),
-                     live=True,
-                     allow_flagging="never"
-                     )
+        with gr.Row():
+            user_publications_dropdown = gr.Dropdown(choices=list(temp["users"].keys()),
+                                                     label="Choisissez l'utilisateur dont vous souhaitez "
+                                                           "connaître le nombre de publications")
+            user_publications_textbox = gr.Textbox(max_lines=1, label="Nombre de publications")
+        user_publications_clearbutton = gr.ClearButton(value="Effacer", variant="secondary")
 
-        gr.Interface(get_number_hashtag_publication,
-                     gr.Dropdown(choices=list(temp["hashtags"].keys()),
-                                 label="Choisissez le hashtag dont vous souhaitez connaître le nombre de "
-                                       "publications"),
-                     gr.Textbox(max_lines=1),
-                     live=True,
-                     allow_flagging="never"
-                     )
+        user_publications_dropdown.select(get_number_user_publication, inputs=user_publications_dropdown,
+                                          outputs=user_publications_textbox)
+        user_publications_clearbutton.click(user_publications_clear, outputs=[user_publications_dropdown,
+                                                                              user_publications_textbox])
+
+        with gr.Row():
+            hashtag_publications_dropdown = gr.Dropdown(choices=list(temp["hashtags"].keys()),
+                                                        label="Choisissez le hashtag dont vous souhaitez connaître "
+                                                              "le nombre de publications")
+            hashtag_publications_textbox = gr.Textbox(max_lines=1, label="Nombre de publications")
+        hashtag_publications_clearbutton = gr.ClearButton(value="Effacer", variant="secondary")
+
+        hashtag_publications_dropdown.select(get_number_hashtag_publication, inputs=hashtag_publications_dropdown,
+                                             outputs=hashtag_publications_textbox)
+        hashtag_publications_clearbutton.click(hashtag_publications_clear, outputs=[hashtag_publications_dropdown,
+                                                                                    hashtag_publications_textbox])
 
         gr.Markdown("## Analyse des sentiments des utilisateurs", elem_classes="inpoda_title")
 
@@ -264,43 +362,80 @@ def make_model(tweets):
 
         gr.Markdown("## Ensemble de tweets", elem_classes="inpoda_title")
 
-        gr.Interface(user_tweets,
-                     gr.Dropdown(choices=list(temp["users"].keys()),
-                                 label="Choisissez l'utilisateur dont vous souhaitez connaître les tweets"),
-                     gr.Dataframe(headers=["ID", "Texte"], height=250, show_label=False, label=""),
-                     live=True,
-                     allow_flagging="never"
-                     )
+        with gr.Row():
+            user_tweets_dropdown = gr.Dropdown(choices=list(temp["users"].keys()),
+                                               label="Choisissez l'utilisateur dont vous souhaitez connaître "
+                                                     "les tweets")
+            user_tweets_dataframe = gr.Dataframe(headers=["ID", "Texte"], height=250,
+                                                 label="Tweet(s) de l'utilisateur")
+        user_tweets_clearbutton = gr.ClearButton(value="Effacer", variant="secondary")
 
-        gr.Interface(user_mentionned_tweets,
-                     gr.Dropdown(choices=list(temp["users"].keys()),
-                                 label="Choisissez l'utilisateur dont vous souhaitez connaître les tweets où "
-                                       "l'utilisateur est mentionné"),
-                     gr.Dataframe(headers=["ID", "Texte"], height=250, show_label=False, label=""),
-                     live=True,
-                     allow_flagging="never"
-                     )
+        user_tweets_dropdown.select(user_tweets, inputs=user_tweets_dropdown, outputs=user_tweets_dataframe)
+        user_tweets_clearbutton.click(user_tweets_clear, outputs=[user_tweets_dropdown, user_tweets_dataframe])
 
-        gr.Interface(user_mentionned_hashtags,
-                     gr.Dropdown(choices=list(temp["hashtags"].keys()),
-                                 label="Choisissez le hashtag dont vous souhaitez connaître les "
-                                       "utilisateurs l'ayant utilisé"),
-                     gr.Dataframe(headers=["Utilisateur(s)"], label="Utilisateurs ayant utilisé le hashtag",
-                                  height=250),
-                     live=True,
-                     allow_flagging="never"
-                     )
+        with gr.Row():
+            user_mentionned_tweets_dropdown = gr.Dropdown(choices=list(temp["users"].keys()),
+                                                          label="Choisissez l'utilisateur dont vous souhaitez "
+                                                                "connaître les tweets où l'utilisateur est "
+                                                                "mentionné")
+            user_mentionned_tweets_dataframe = gr.Dataframe(headers=["ID", "Texte"], height=250,
+                                                            label="Tweet(s) où l'utilisateur est mentionné")
+        user_mentionned_tweets_clearbutton = gr.ClearButton(value="Effacer", variant="secondary")
 
-        gr.Interface(user_mentionned_user,
-                     gr.Dropdown(choices=list(temp["users"].keys()),
-                                 label="Choisissez l'utilisateur dont vous souhaitez connaître les utilisateurs qu'il "
-                                       "a mentionné"),
-                     gr.Dataframe(headers=["Utilisateur(s)"], label="Utilisateurs mentionné par l'utilisateur choisi",
-                                  height=250),
-                     live=True,
-                     allow_flagging="never"
-                     )
+        user_mentionned_tweets_dropdown.select(user_mentionned_tweets, inputs=user_mentionned_tweets_dropdown,
+                                               outputs=user_mentionned_tweets_dataframe)
+        user_mentionned_tweets_clearbutton.click(user_mentionned_tweets_clear,
+                                                 outputs=[user_mentionned_tweets_dropdown,
+                                                          user_mentionned_tweets_dataframe])
 
-        btn.click(change_file_after_submitting, inputs=[f])
+        gr.Markdown("## Utilisateurs ayant fait une action spécifique", elem_classes="inpoda_title")
+
+        with gr.Row():
+            user_mentionned_hashtags_dropdown = gr.Dropdown(choices=list(temp["hashtags"].keys()),
+                                                            label="Choisissez le hashtag dont vous souhaitez "
+                                                                  "connaître les utilisateurs l'ayant utilisé")
+            user_mentionned_hashtags_dataset = gr.Dataset(components=["text"], samples=[],
+                                                          label="Utilisateurs ayant utilisé le hashtag")
+        user_mentionned_hashtags_clearbutton = gr.ClearButton(value="Effacer", variant="secondary")
+
+        user_mentionned_hashtags_dropdown.select(user_mentionned_hashtags,
+                                                 inputs=user_mentionned_hashtags_dropdown,
+                                                 outputs=user_mentionned_hashtags_dataset)
+        user_mentionned_hashtags_clearbutton.click(user_mentionned_hashtags_clear,
+                                                   outputs=[user_mentionned_hashtags_dropdown,
+                                                            user_mentionned_hashtags_dataset])
+
+        with gr.Row():
+            user_mentionned_user_dropdown = gr.Dropdown(choices=list(temp["users"].keys()),
+                                                        label="Choisissez l'utilisateur dont vous souhaitez "
+                                                              "connaître les utilisateurs qu'il a mentionné")
+            user_mentionned_user_dataset = gr.Dataset(components=["text"], samples=[],
+                                                      label="Utilisateurs mentionné par l'utilisateur choisi")
+        user_mentionned_user_clearbutton = gr.ClearButton(value="Effacer", variant="secondary")
+
+        user_mentionned_user_dropdown.select(user_mentionned_user, inputs=user_mentionned_user_dropdown,
+                                             outputs=user_mentionned_user_dataset)
+        user_mentionned_user_clearbutton.click(user_mentionned_user_clear,
+                                               outputs=[user_mentionned_user_dropdown,
+                                                        user_mentionned_user_dataset])
+
+        gr.Markdown("## Télécharger zonedatterrissage.json", elem_classes="inpoda_title")
+        file_download = gr.File(file_types=[".json"], value="data/zonedatterrissage.json")
+
+        btn.click(change_file_after_submitting, inputs=[f], outputs=[radio_top,
+                                                                     user_publications_dropdown,
+                                                                     user_publications_textbox,
+                                                                     hashtag_publications_dropdown,
+                                                                     hashtag_publications_textbox,
+                                                                     sentiment_radio,
+                                                                     user_tweets_dropdown,
+                                                                     user_tweets_dataframe,
+                                                                     user_mentionned_tweets_dropdown,
+                                                                     user_mentionned_tweets_dataframe,
+                                                                     user_mentionned_hashtags_dropdown,
+                                                                     user_mentionned_hashtags_dataset,
+                                                                     user_mentionned_user_dropdown,
+                                                                     user_mentionned_user_dataset,
+                                                                     file_download])
 
     interface.launch(favicon_path="favicon.png")
