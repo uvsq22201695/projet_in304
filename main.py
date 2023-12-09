@@ -18,7 +18,3 @@ def main():
 
     # On crée l'interface graphique
     make_model(tweets)
-
-
-if __name__ == "__main__":
-    main()
