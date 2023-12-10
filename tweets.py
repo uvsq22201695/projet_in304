@@ -51,8 +51,8 @@ class Tweet:
 
         self.id = tweet_data["id"]
         self.user = chose_username() if "AuthorName" not in tweet_data else tweet_data["AuthorName"]
-        self.date = tweet_data["CreatedAt"]
-        self.location = tweet_data["AuthorLocation"]
+        self.date = tweet_data.get("CreatedAt")
+        self.location = tweet_data.get("AuthorLocation")
         self.text = tweet_data["TweetText"]
         self.clean_text(["#", "@"])
         self.hashtags = []
