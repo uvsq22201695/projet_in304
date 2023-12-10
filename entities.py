@@ -1,4 +1,5 @@
 from tweets import Tweet
+import pycountry
 
 USERS = "users"
 HASHTAGS = "hashtags"
@@ -91,3 +92,23 @@ def topEntities(k: int, entity: dict) -> dict:
 
     # On retourne les k entités les plus utilisés
     return top_entities
+
+
+def count_tweets_per_country(tweets: list) -> dict:
+    # get the tweets' locations
+    locations = {}
+    for tweet in tweets:
+        if tweet.location != "":
+            for l in tweet.location.split():
+                l = l.replace(",", "").title()
+
+                c = pycountry.countries.get(name=l)             # check if the location is the name of a country
+                if not c:                                       # check if the location is a common name for a country
+                    c = pycountry.countries.get(common_name=l)
+                if not c:                                       # check if the location is an alpha_3 code for a country
+                    c = pycountry.countries.get(alpha_3=l)
+                if c:                                           # if the location is a country, we count it
+                    locations[l] = [c.alpha_3, locations[l][1] + 1 if l in locations else 1]
+                    break
+
+    return locations

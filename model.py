@@ -2,15 +2,18 @@ import json
 
 import gradio as gr
 
-from entities import count_entities, topEntities
+from entities import count_entities, topEntities, count_tweets_per_country
 from histogram import create_histogram_top
 from circulardiagram import create_circular_diagram
 from inits import initialize
 from data import check
+from carte import create_world_map
 
 RADIO_LABEL = "Top K"
 RADIO_INFO = "Cochez la case si vous souhaitez avoir le top K renseignés."
 RADIO_CHOICES = ["Hashtags", "Utilisateurs mentionnés", "Utilisateurs actifs", "Topics", "Masquer"]
+MAP_CHOICES = ["Afficher la carte", "Masquer"]
+current_map_i = 0
 SLIDER_LABEL = "K "
 SLIDER_INFO = "Veuillez choisir un nombre entre 2 et 50"
 SENTIMENT_CHOICES = ["Polarité", "Subjectivité", "Masquer"]
@@ -113,6 +116,29 @@ def make_model(tweets):
                 plot_hashtags: gr.Plot(create_histogram_top(topEntities(value, temp[choices[choice]]),
                                                             choices[choice]), visible=True)
             }
+
+        def tweet_per_country():
+            """
+            Cette fonction permet d'afficher le nombre de tweets par pays.
+            :return: Nombre de tweets par pays
+            """
+            global current_map_i
+            countries = count_tweets_per_country(tweets)
+            l, c, t = [], [], []
+            for k in countries:
+                l.append(k)
+                c.append(countries[k][0])
+                t.append(countries[k][1])
+
+            if current_map_i >= 1:
+                current_map_i = 0
+                return {plot_map: gr.Plot(visible=False),
+                        map_btn: gr.Button(value=MAP_CHOICES[current_map_i], variant="secondary", visible=True)}
+
+            else:
+                current_map_i += 1
+                return {plot_map: gr.Plot(create_world_map(l, c, t), visible=True),
+                    map_btn: gr.Button(value=MAP_CHOICES[current_map_i], variant="secondary", visible=True)}
 
         def get_number_user_publication(username: str):
             """
@@ -269,6 +295,7 @@ def make_model(tweets):
             }
 
         def change_file_after_submitting(file: str):
+            global current_map_i
             nonlocal tweets, temp
             """
             Cette fonction permet de changer le fichier après avoir cliqué sur le bouton "Envoyez".
@@ -293,6 +320,8 @@ def make_model(tweets):
                     user_mentionned_hashtags_dataset: user_mentionned_hashtags_dataset,
                     user_mentionned_user_dropdown: user_mentionned_user_dropdown,
                     user_mentionned_user_dataset: user_mentionned_user_dataset,
+                    map_btn: map_btn,
+                    plot_map: plot_map,
                     file_download: file_download
                 }
 
@@ -317,6 +346,8 @@ def make_model(tweets):
                     user_mentionned_hashtags_dataset: user_mentionned_hashtags_dataset,
                     user_mentionned_user_dropdown: user_mentionned_user_dropdown,
                     user_mentionned_user_dataset: user_mentionned_user_dataset,
+                    map_btn: map_btn,
+                    plot_map: plot_map,
                     file_download: file_download
                 }
             else:
@@ -324,6 +355,8 @@ def make_model(tweets):
                 tweets = initialize(data)
                 temp = init_entities()
                 gr.Info("Les données sont initialisées")
+
+                current_map_i = 0
 
                 return {
                     radio_top: gr.Radio(value="Masquer"),
@@ -340,6 +373,8 @@ def make_model(tweets):
                     user_mentionned_hashtags_dataset: [],
                     user_mentionned_user_dropdown: gr.Dropdown(choices=list(temp["users"].keys()), value=None),
                     user_mentionned_user_dataset: [],
+                    map_btn: gr.Button(value=MAP_CHOICES[0], variant="secondary", visible=True),
+                    plot_map: gr.Plot(visible=False),
                     file_download: gr.File(file_types=[".json"], value="data/zonedatterrissage.json"),
                 }
 
@@ -356,6 +391,11 @@ def make_model(tweets):
 
         radio_top.change(change_slider, inputs=[radio_top, slider_hashtags], outputs=[slider_hashtags, plot_hashtags])
         slider_hashtags.change(change_histogram, inputs=[radio_top, slider_hashtags], outputs=plot_hashtags)
+
+        gr.Markdown("## Carte des tweets", elem_classes="inpoda_title")
+        map_btn = gr.Button(value=MAP_CHOICES[0], variant="secondary", visible=True)
+        plot_map = gr.Plot(visible=False)
+        map_btn.click(tweet_per_country, outputs=[plot_map, map_btn])
 
         gr.Markdown("## Statistiques sur le nombre de publications", elem_classes="inpoda_title")
 
@@ -466,6 +506,18 @@ def make_model(tweets):
                                                                      user_mentionned_hashtags_dataset,
                                                                      user_mentionned_user_dropdown,
                                                                      user_mentionned_user_dataset,
+                                                                     map_btn,
+                                                                     plot_map,
                                                                      file_download])
 
+
     interface.launch(favicon_path="favicon.png")
+
+
+    # countries = count_tweets_per_country(tweets)
+    # l, c, t = [], [], []
+    # for k in countries:
+    #     l.append(k)
+    #     c.append(countries[k][0])
+    #     t.append(countries[k][1])
+    # create_world_map(l, c, t)
