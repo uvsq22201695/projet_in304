@@ -55,6 +55,7 @@ class Tweet:
         self.clean_text(["#", "@"])
         self.hashtags = []
         self.arobase = []
+        self.topics = []
         self.polarity = self.calculate_polarity()
         self.subjectivity = self.calculate_subjectivity()
 
@@ -95,6 +96,25 @@ class Tweet:
             text.remove(word)
 
         self.cleaned_text = " ".join(text)
+
+    def find_topics(self, topics: list):
+        """
+        Cette fonction permet de trouver les thèmes du tweet.
+        :param topics: Liste des thèmes
+        """
+
+        # On sépare le texte en liste de mots
+        text = self.cleaned_text.split()
+
+        # On parcourt chaque mot du tweet
+        for word in text.copy():
+            for t in topics:
+                if t in self.topics:
+                    continue
+
+                if word.lower() in t or word.lower() in t:
+                    self.topics.append(t)
+                    break
 
     def clean_text(self, excepted_char: list):
         """

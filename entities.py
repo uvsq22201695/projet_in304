@@ -6,6 +6,7 @@ AROBASE = "arobase"
 OCCURENCE = "occurence"
 POLARITY = "polarity"
 SUBJECTIVITY = "subjectivity"
+TOPICS = "topics"
 ID = "id"
 USERS_WHO_USED = "users_who_used"
 
@@ -48,7 +49,7 @@ def count_entity(entity: str, entity_dict: dict, entity_type: str, tweet: Tweet)
     if entity in entity_dict:
         entity_dict[entity][OCCURENCE] += 1
 
-        if entity_type in (AROBASE, USERS):
+        if entity_type in (AROBASE, USERS, TOPICS):
             entity_dict[entity][ID].append(tweet.id)
 
         if entity_type in (AROBASE, HASHTAGS):
@@ -60,7 +61,7 @@ def count_entity(entity: str, entity_dict: dict, entity_type: str, tweet: Tweet)
             OCCURENCE: 1
         }
 
-        if entity_type in (AROBASE, USERS):
+        if entity_type in (AROBASE, USERS, TOPICS):
             entity_dict[entity][ID] = [tweet.id]
 
         if entity_type in (AROBASE, HASHTAGS):

@@ -10,7 +10,7 @@ from data import check
 
 RADIO_LABEL = "Top K"
 RADIO_INFO = "Cochez la case si vous souhaitez avoir le top K renseignés."
-RADIO_CHOICES = ["Hashtags", "Utilisateurs mentionnés", "Utilisateurs actifs", "Masquer"]
+RADIO_CHOICES = ["Hashtags", "Utilisateurs mentionnés", "Utilisateurs actifs", "Topics", "Masquer"]
 SLIDER_LABEL = "K "
 SLIDER_INFO = "Veuillez choisir un nombre entre 2 et 50"
 SENTIMENT_CHOICES = ["Polarité", "Subjectivité", "Masquer"]
@@ -19,6 +19,7 @@ choices = {
     "Hashtags": "hashtags",
     "Utilisateurs actifs": "users",
     "Utilisateurs mentionnés": "users_mentioned",
+    "Topics": "topics",
     "Polarité": "polarity",
     "Subjectivité": "subjectivity"
 }
@@ -53,6 +54,8 @@ def make_model(tweets):
         entities_hashtags = count_entities(tweets, "hashtags")
         entities_users = count_entities(tweets, "users")
         entities_users_mentioned = count_entities(tweets, "arobase")
+        entities_topics = count_entities(tweets, "topics")
+
         entities_polarity = count_entities(tweets, "polarity")
         entities_subjectivity = count_entities(tweets, "subjectivity")
 
@@ -60,6 +63,7 @@ def make_model(tweets):
             "hashtags": entities_hashtags,
             "users": entities_users,
             "users_mentioned": entities_users_mentioned,
+            "topics": entities_topics,
             "polarity": entities_polarity,
             "subjectivity": entities_subjectivity
         }
