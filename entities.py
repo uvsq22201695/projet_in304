@@ -105,16 +105,16 @@ def count_tweets_per_country(tweets: list) -> dict:
     locations = {}
     for tweet in tweets:
         if not (tweet.location == "" or tweet.location is None):
-            for l in tweet.location.split():
-                l = l.replace(",", "").title()
+            for loc in tweet.location.split():
+                loc = loc.replace(",", "").title()
 
-                c = pycountry.countries.get(name=l)             # check if the location is the name of a country
+                c = pycountry.countries.get(name=loc)             # check if the location is the name of a country
                 if not c:                                       # check if the location is a common name for a country
-                    c = pycountry.countries.get(common_name=l)
+                    c = pycountry.countries.get(common_name=loc)
                 if not c:                                       # check if the location is an alpha_3 code for a country
-                    c = pycountry.countries.get(alpha_3=l)
+                    c = pycountry.countries.get(alpha_3=loc)
                 if c:                                           # if the location is a country, we count it
-                    locations[l] = [c.alpha_3, locations[l][1] + 1 if l in locations else 1]
+                    locations[loc] = [c.alpha_3, locations[loc][1] + 1 if loc in locations else 1]
                     break
 
     return locations
