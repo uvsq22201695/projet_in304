@@ -1,4 +1,4 @@
-#### (Ceci est le compte-rendu de Maël Fajon (en INTD-04) et de Alexandre François(en LDDBI) pour le projet d'IN304 de 2023.)
+#### (Ceci est le compte-rendu de Maël Fajon (étudiant en INTD-04) et de Alexandre François (étudiant en LDDBI) pour le projet d'IN304 de 2023.)
 ## Compte rendu :
 Pour le projet d'IN304, nous nous sommes dits qu'il fallait commencer par récupérer les Tweets, que nous avons ensuite transformés en objets (de Programmation Orientée Objet), que nous pourrions ensuite manipuler plus facilement.
 
