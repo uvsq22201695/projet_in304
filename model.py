@@ -132,11 +132,6 @@ def make_model(tweets):
                 c.append(temp["map"][k][0])
                 t.append(temp["map"][k][1])
 
-
-            if l == []:
-                return {plot_map: gr.Plot(visible=False),
-                        map_btn: gr.Button(value=MAP_CHOICES[current_map_i], variant="secondary", visible=True, interactive=True)}
-
             if current_map_i >= 1:
                 current_map_i = 0
                 return {plot_map: gr.Plot(visible=False),
