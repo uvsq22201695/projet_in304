@@ -230,69 +230,23 @@ def make_model(tweets):
 
             return mention_user
 
-        def user_publications_clear():
-            """
-            Cette fonction permet d'effacer le contenu du textbox.
-            :return: Textbox
-            """
-
-            return {
-                user_publications_dropdown: None,
-                user_publications_textbox: None
-            }
-
-        def hashtag_publications_clear():
-            """
-            Cette fonction permet d'effacer le contenu du textbox.
-            :return: Textbox
-            """
-
-            return {
-                hashtag_publications_dropdown: None,
-                hashtag_publications_textbox: None
-            }
-
-        def user_tweets_clear():
-            """
-            Cette fonction permet d'effacer le contenu du textbox.
-            :return: Textbox
-            """
-
-            return {
-                user_tweets_dropdown: None,
-                user_tweets_dataframe: None
-            }
-
-        def user_mentionned_tweets_clear():
-            """
-            Cette fonction permet d'effacer le contenu du textbox.
-            :return: Textbox
-            """
-
-            return {
-                user_mentionned_tweets_dropdown: None,
-                user_mentionned_tweets_dataframe: None
-            }
-
         def user_mentionned_hashtags_clear():
             """
-            Cette fonction permet d'effacer le contenu du textbox.
-            :return: Textbox
+            Cette fonction permet d'effacer le contenu du Dataset.
+            :return: Dataset
             """
 
             return {
-                user_mentionned_hashtags_dropdown: None,
                 user_mentionned_hashtags_dataset: []
             }
 
         def user_mentionned_user_clear():
             """
-            Cette fonction permet d'effacer le contenu du textbox.
-            :return: Textbox
+            Cette fonction permet d'effacer le contenu du Dataset.
+            :return: Dataset
             """
 
             return {
-                user_mentionned_user_dropdown: None,
                 user_mentionned_user_dataset: []
             }
 
@@ -406,24 +360,22 @@ def make_model(tweets):
                                                      label="Choisissez l'utilisateur dont vous souhaitez "
                                                            "connaître le nombre de publications")
             user_publications_textbox = gr.Textbox(max_lines=1, label="Nombre de publications")
-        user_publications_clearbutton = gr.ClearButton(value="Effacer", variant="secondary")
+        gr.ClearButton(components=[user_publications_dropdown, user_publications_textbox], value="Effacer",
+                       variant="secondary")
 
         user_publications_dropdown.select(get_number_user_publication, inputs=user_publications_dropdown,
                                           outputs=user_publications_textbox)
-        user_publications_clearbutton.click(user_publications_clear, outputs=[user_publications_dropdown,
-                                                                              user_publications_textbox])
 
         with gr.Row():
             hashtag_publications_dropdown = gr.Dropdown(choices=list(temp["hashtags"].keys()),
                                                         label="Choisissez le hashtag dont vous souhaitez connaître "
                                                               "le nombre de publications")
             hashtag_publications_textbox = gr.Textbox(max_lines=1, label="Nombre de publications")
-        hashtag_publications_clearbutton = gr.ClearButton(value="Effacer", variant="secondary")
+        gr.ClearButton(components=[hashtag_publications_dropdown, hashtag_publications_textbox], value="Effacer",
+                       variant="secondary")
 
         hashtag_publications_dropdown.select(get_number_hashtag_publication, inputs=hashtag_publications_dropdown,
                                              outputs=hashtag_publications_textbox)
-        hashtag_publications_clearbutton.click(hashtag_publications_clear, outputs=[hashtag_publications_dropdown,
-                                                                                    hashtag_publications_textbox])
 
         gr.Markdown("## Analyse des sentiments des utilisateurs", elem_classes="inpoda_title")
 
@@ -440,10 +392,9 @@ def make_model(tweets):
                                                      "les tweets")
             user_tweets_dataframe = gr.Dataframe(headers=["ID", "Texte"], height=250,
                                                  label="Tweet(s) de l'utilisateur")
-        user_tweets_clearbutton = gr.ClearButton(value="Effacer", variant="secondary")
+        gr.ClearButton(components=[user_tweets_dropdown, user_tweets_dataframe], value="Effacer", variant="secondary")
 
         user_tweets_dropdown.select(user_tweets, inputs=user_tweets_dropdown, outputs=user_tweets_dataframe)
-        user_tweets_clearbutton.click(user_tweets_clear, outputs=[user_tweets_dropdown, user_tweets_dataframe])
 
         with gr.Row():
             user_mentionned_tweets_dropdown = gr.Dropdown(choices=list(temp["users"].keys()),
@@ -452,13 +403,11 @@ def make_model(tweets):
                                                                 "mentionné")
             user_mentionned_tweets_dataframe = gr.Dataframe(headers=["ID", "Texte"], height=250,
                                                             label="Tweet(s) où l'utilisateur est mentionné")
-        user_mentionned_tweets_clearbutton = gr.ClearButton(value="Effacer", variant="secondary")
+        gr.ClearButton(components=[user_mentionned_tweets_dropdown, user_mentionned_tweets_dataframe], value="Effacer",
+                       variant="secondary")
 
         user_mentionned_tweets_dropdown.select(user_mentionned_tweets, inputs=user_mentionned_tweets_dropdown,
                                                outputs=user_mentionned_tweets_dataframe)
-        user_mentionned_tweets_clearbutton.click(user_mentionned_tweets_clear,
-                                                 outputs=[user_mentionned_tweets_dropdown,
-                                                          user_mentionned_tweets_dataframe])
 
         gr.Markdown("## Utilisateurs ayant fait une action spécifique", elem_classes="inpoda_title")
 
@@ -468,14 +417,13 @@ def make_model(tweets):
                                                                   "connaître les utilisateurs l'ayant utilisé")
             user_mentionned_hashtags_dataset = gr.Dataset(components=["text"], samples=[],
                                                           label="Utilisateurs ayant utilisé le hashtag")
-        user_mentionned_hashtags_clearbutton = gr.ClearButton(value="Effacer", variant="secondary")
+        user_mentionned_hashtags_clearbutton = gr.ClearButton(components=user_mentionned_hashtags_dropdown,
+                                                              value="Effacer", variant="secondary")
 
-        user_mentionned_hashtags_dropdown.select(user_mentionned_hashtags,
-                                                 inputs=user_mentionned_hashtags_dropdown,
+        user_mentionned_hashtags_dropdown.select(user_mentionned_hashtags, inputs=user_mentionned_hashtags_dropdown,
                                                  outputs=user_mentionned_hashtags_dataset)
         user_mentionned_hashtags_clearbutton.click(user_mentionned_hashtags_clear,
-                                                   outputs=[user_mentionned_hashtags_dropdown,
-                                                            user_mentionned_hashtags_dataset])
+                                                   outputs=user_mentionned_hashtags_dataset)
 
         with gr.Row():
             user_mentionned_user_dropdown = gr.Dropdown(choices=list(temp["users"].keys()),
@@ -483,34 +431,32 @@ def make_model(tweets):
                                                               "connaître les utilisateurs qu'il a mentionné")
             user_mentionned_user_dataset = gr.Dataset(components=["text"], samples=[],
                                                       label="Utilisateurs mentionné par l'utilisateur choisi")
-        user_mentionned_user_clearbutton = gr.ClearButton(value="Effacer", variant="secondary")
+        user_mentionned_user_clearbutton = gr.ClearButton(components=user_mentionned_user_dropdown, value="Effacer",
+                                                          variant="secondary")
 
         user_mentionned_user_dropdown.select(user_mentionned_user, inputs=user_mentionned_user_dropdown,
                                              outputs=user_mentionned_user_dataset)
-        user_mentionned_user_clearbutton.click(user_mentionned_user_clear,
-                                               outputs=[user_mentionned_user_dropdown,
-                                                        user_mentionned_user_dataset])
+        user_mentionned_user_clearbutton.click(user_mentionned_user_clear, outputs=[user_mentionned_user_dataset])
 
         gr.Markdown("## Télécharger zonedatterrissage.json", elem_classes="inpoda_title")
         file_download = gr.File(file_types=[".json"], value="data/zonedatterrissage.json")
 
-        btn.click(change_file_after_submitting, inputs=[f], outputs=[radio_top,
-                                                                     user_publications_dropdown,
-                                                                     user_publications_textbox,
-                                                                     hashtag_publications_dropdown,
-                                                                     hashtag_publications_textbox,
-                                                                     sentiment_radio,
-                                                                     user_tweets_dropdown,
-                                                                     user_tweets_dataframe,
-                                                                     user_mentionned_tweets_dropdown,
-                                                                     user_mentionned_tweets_dataframe,
-                                                                     user_mentionned_hashtags_dropdown,
-                                                                     user_mentionned_hashtags_dataset,
-                                                                     user_mentionned_user_dropdown,
-                                                                     user_mentionned_user_dataset,
-                                                                     map_btn,
-                                                                     plot_map,
-                                                                     file_download])
-
+        btn.click(change_file_after_submitting, inputs=f, outputs=[radio_top,
+                                                                   user_publications_dropdown,
+                                                                   user_publications_textbox,
+                                                                   hashtag_publications_dropdown,
+                                                                   hashtag_publications_textbox,
+                                                                   sentiment_radio,
+                                                                   user_tweets_dropdown,
+                                                                   user_tweets_dataframe,
+                                                                   user_mentionned_tweets_dropdown,
+                                                                   user_mentionned_tweets_dataframe,
+                                                                   user_mentionned_hashtags_dropdown,
+                                                                   user_mentionned_hashtags_dataset,
+                                                                   user_mentionned_user_dropdown,
+                                                                   user_mentionned_user_dataset,
+                                                                   map_btn,
+                                                                   plot_map,
+                                                                   file_download])
 
     interface.launch(favicon_path="favicon.png")
