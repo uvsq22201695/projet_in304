@@ -62,13 +62,16 @@ def make_model(tweets):
         entities_polarity = count_entities(tweets, "polarity")
         entities_subjectivity = count_entities(tweets, "subjectivity")
 
+        map_tweets = count_tweets_per_country(tweets)
+
         return {
             "hashtags": entities_hashtags,
             "users": entities_users,
             "users_mentioned": entities_users_mentioned,
             "topics": entities_topics,
             "polarity": entities_polarity,
-            "subjectivity": entities_subjectivity
+            "subjectivity": entities_subjectivity,
+            "map": map_tweets
         }
 
     temp = init_entities()
@@ -123,12 +126,16 @@ def make_model(tweets):
             :return: Nombre de tweets par pays
             """
             global current_map_i
-            countries = count_tweets_per_country(tweets)
             l, c, t = [], [], []
-            for k in countries:
+            for k in temp["map"]:
                 l.append(k)
-                c.append(countries[k][0])
-                t.append(countries[k][1])
+                c.append(temp["map"][k][0])
+                t.append(temp["map"][k][1])
+
+
+            if l == []:
+                return {plot_map: gr.Plot(visible=False),
+                        map_btn: gr.Button(value=MAP_CHOICES[current_map_i], variant="secondary", visible=True, interactive=True)}
 
             if current_map_i >= 1:
                 current_map_i = 0
@@ -138,7 +145,7 @@ def make_model(tweets):
             else:
                 current_map_i += 1
                 return {plot_map: gr.Plot(create_world_map(l, c, t), visible=True),
-                    map_btn: gr.Button(value=MAP_CHOICES[current_map_i], variant="secondary", visible=True)}
+                        map_btn: gr.Button(value=MAP_CHOICES[current_map_i], variant="secondary", visible=True)}
 
         def get_number_user_publication(username: str):
             """
@@ -373,7 +380,7 @@ def make_model(tweets):
                     user_mentionned_hashtags_dataset: [],
                     user_mentionned_user_dropdown: gr.Dropdown(choices=list(temp["users"].keys()), value=None),
                     user_mentionned_user_dataset: [],
-                    map_btn: gr.Button(value=MAP_CHOICES[0], variant="secondary", visible=True),
+                    map_btn: gr.Button(value=MAP_CHOICES[0], variant="secondary", visible=True, interactive=True),
                     plot_map: gr.Plot(visible=False),
                     file_download: gr.File(file_types=[".json"], value="data/zonedatterrissage.json"),
                 }

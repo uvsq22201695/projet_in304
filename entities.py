@@ -98,7 +98,7 @@ def count_tweets_per_country(tweets: list) -> dict:
     # get the tweets' locations
     locations = {}
     for tweet in tweets:
-        if tweet.location != "":
+        if tweet.location != "" and tweet.location is not None:
             for l in tweet.location.split():
                 l = l.replace(",", "").title()
 
