@@ -168,6 +168,19 @@ def make_model(tweets):
             return "Le hashtag " + hashtag + " a été utilisé " + str(
                 temp["hashtags"].get(hashtag)["occurrence"]) + " fois."
 
+        def get_number_topic_publication(topic: str):
+            """
+            Cette fonction permet d'afficher le nombre de publications d'un topic.
+            :param topic: Topic
+            :return: Nombre de publications
+            """
+
+            if topic is None:
+                return ""
+
+            return "Le topic " + topic + " a été utilisé " + str(
+                temp["topics"].get(topic)["occurrence"]) + " fois."
+
         def get_sentiment(choice: str):
             """
             Cette fonction permet d'afficher le sentiment des utilisateurs.
@@ -261,78 +274,64 @@ def make_model(tweets):
 
             if file is None:
                 gr.Warning("Veuillez choisir un fichier à analyser. Restauration des données précédentes.")
-                return {
-                    radio_top: radio_top,
-                    user_publications_dropdown: user_publications_dropdown,
-                    user_publications_textbox: user_publications_textbox,
-                    hashtag_publications_dropdown: hashtag_publications_dropdown,
-                    hashtag_publications_textbox: hashtag_publications_textbox,
-                    sentiment_radio: sentiment_radio,
-                    user_tweets_dropdown: user_tweets_dropdown,
-                    user_tweets_dataframe: user_tweets_dataframe,
-                    user_mentionned_tweets_dropdown: user_mentionned_tweets_dropdown,
-                    user_mentionned_tweets_dataframe: user_mentionned_tweets_dataframe,
-                    user_mentionned_hashtags_dropdown: user_mentionned_hashtags_dropdown,
-                    user_mentionned_hashtags_dataset: user_mentionned_hashtags_dataset,
-                    user_mentionned_user_dropdown: user_mentionned_user_dropdown,
-                    user_mentionned_user_dataset: user_mentionned_user_dataset,
-                    map_btn: map_btn,
-                    plot_map: plot_map,
-                    file_download: file_download
-                }
 
-            # On ouvre le fichier json et on le charge dans une liste de dictionnaire
-            with open(file, "r", encoding="UTF-8") as file:
-                data = [json.loads(line) for line in file]
-
-            if not check(data):
-                gr.Warning("Les données ne sont pas valides. Restauration des données précédentes.")
-                return {
-                    radio_top: radio_top,
-                    user_publications_dropdown: user_publications_dropdown,
-                    user_publications_textbox: user_publications_textbox,
-                    hashtag_publications_dropdown: hashtag_publications_dropdown,
-                    hashtag_publications_textbox: hashtag_publications_textbox,
-                    sentiment_radio: sentiment_radio,
-                    user_tweets_dropdown: user_tweets_dropdown,
-                    user_tweets_dataframe: user_tweets_dataframe,
-                    user_mentionned_tweets_dropdown: user_mentionned_tweets_dropdown,
-                    user_mentionned_tweets_dataframe: user_mentionned_tweets_dataframe,
-                    user_mentionned_hashtags_dropdown: user_mentionned_hashtags_dropdown,
-                    user_mentionned_hashtags_dataset: user_mentionned_hashtags_dataset,
-                    user_mentionned_user_dropdown: user_mentionned_user_dropdown,
-                    user_mentionned_user_dataset: user_mentionned_user_dataset,
-                    map_btn: map_btn,
-                    plot_map: plot_map,
-                    file_download: file_download
-                }
             else:
-                gr.Info("Les données sont valides et en cours d'initialisation")
-                tweets = initialize(data)
-                temp = init_entities()
-                gr.Info("Les données sont initialisées")
+                # On ouvre le fichier json et on le charge dans une liste de dictionnaire
+                with open(file, "r", encoding="UTF-8") as file:
+                    data = [json.loads(line) for line in file]
 
-                current_map_i = 0
+                if not check(data):
+                    gr.Warning("Les données ne sont pas valides. Restauration des données précédentes.")
+                else:
+                    gr.Info("Les données sont valides et en cours d'initialisation")
+                    tweets = initialize(data)
+                    temp = init_entities()
+                    gr.Info("Les données sont initialisées")
 
-                return {
-                    radio_top: gr.Radio(value="Masquer"),
-                    user_publications_dropdown: gr.Dropdown(choices=list(temp["users"].keys()), value=None),
-                    user_publications_textbox: None,
-                    hashtag_publications_dropdown: gr.Dropdown(choices=list(temp["hashtags"].keys()), value=None),
-                    hashtag_publications_textbox: None,
-                    sentiment_radio: gr.Radio(value="Masquer"),
-                    user_tweets_dropdown: gr.Dropdown(choices=list(temp["users"].keys()), value=None),
-                    user_tweets_dataframe: None,
-                    user_mentionned_tweets_dropdown: gr.Dropdown(choices=list(temp["users"].keys()), value=None),
-                    user_mentionned_tweets_dataframe: None,
-                    user_mentionned_hashtags_dropdown: gr.Dropdown(choices=list(temp["hashtags"].keys()), value=None),
-                    user_mentionned_hashtags_dataset: [],
-                    user_mentionned_user_dropdown: gr.Dropdown(choices=list(temp["users"].keys()), value=None),
-                    user_mentionned_user_dataset: [],
-                    map_btn: gr.Button(value=MAP_CHOICES[0], variant="secondary", visible=True, interactive=True),
-                    plot_map: gr.Plot(visible=False),
-                    file_download: gr.File(file_types=[".json"], value="data/zonedatterrissage.json"),
-                }
+                    current_map_i = 0
+
+                    return {
+                        radio_top: gr.Radio(value="Masquer"),
+                        user_publications_dropdown: gr.Dropdown(choices=list(temp["users"].keys()), value=None),
+                        user_publications_textbox: None,
+                        hashtag_publications_dropdown: gr.Dropdown(choices=list(temp["hashtags"].keys()), value=None),
+                        hashtag_publications_textbox: None,
+                        topic_publications_dropdown: gr.Dropdown(choices=list(temp["topics"].keys()), value=None),
+                        topic_publications_textbox: None,
+                        sentiment_radio: gr.Radio(value="Masquer"),
+                        user_tweets_dropdown: gr.Dropdown(choices=list(temp["users"].keys()), value=None),
+                        user_tweets_dataframe: None,
+                        user_mentionned_tweets_dropdown: gr.Dropdown(choices=list(temp["users"].keys()), value=None),
+                        user_mentionned_tweets_dataframe: None,
+                        user_mentionned_hashtags_dropdown: gr.Dropdown(choices=list(temp["hashtags"].keys()), value=None),
+                        user_mentionned_hashtags_dataset: [],
+                        user_mentionned_user_dropdown: gr.Dropdown(choices=list(temp["users"].keys()), value=None),
+                        user_mentionned_user_dataset: [],
+                        map_btn: gr.Button(value=MAP_CHOICES[0], variant="secondary", visible=True, interactive=True),
+                        plot_map: gr.Plot(visible=False),
+                        file_download: gr.File(file_types=[".json"], value="data/zonedatterrissage.json"),
+                    }
+            return {
+                radio_top: radio_top,
+                user_publications_dropdown: user_publications_dropdown,
+                user_publications_textbox: user_publications_textbox,
+                hashtag_publications_dropdown: hashtag_publications_dropdown,
+                hashtag_publications_textbox: hashtag_publications_textbox,
+                topic_publications_dropdown: topic_publications_dropdown,
+                topic_publications_textbox: topic_publications_textbox,
+                sentiment_radio: sentiment_radio,
+                user_tweets_dropdown: user_tweets_dropdown,
+                user_tweets_dataframe: user_tweets_dataframe,
+                user_mentionned_tweets_dropdown: user_mentionned_tweets_dropdown,
+                user_mentionned_tweets_dataframe: user_mentionned_tweets_dataframe,
+                user_mentionned_hashtags_dropdown: user_mentionned_hashtags_dropdown,
+                user_mentionned_hashtags_dataset: user_mentionned_hashtags_dataset,
+                user_mentionned_user_dropdown: user_mentionned_user_dropdown,
+                user_mentionned_user_dataset: user_mentionned_user_dataset,
+                map_btn: map_btn,
+                plot_map: plot_map,
+                file_download: file_download
+            }
 
         gr.Markdown("# InPoDa", elem_classes="inpoda_title")  # Titre de l'interface graphique
 
@@ -376,6 +375,17 @@ def make_model(tweets):
 
         hashtag_publications_dropdown.select(get_number_hashtag_publication, inputs=hashtag_publications_dropdown,
                                              outputs=hashtag_publications_textbox)
+
+        with gr.Row():
+            topic_publications_dropdown = gr.Dropdown(choices=list(temp["topics"].keys()),
+                                                      label="Choisissez le topic dont vous souhaitez connaître "
+                                                            "le nombre de publications")
+            topic_publications_textbox = gr.Textbox(max_lines=1, label="Nombre de publications")
+        gr.ClearButton(components=[topic_publications_dropdown, topic_publications_textbox], value="Effacer",
+                       variant="secondary")
+
+        topic_publications_dropdown.select(get_number_topic_publication, inputs=topic_publications_dropdown,
+                                           outputs=topic_publications_textbox)
 
         gr.Markdown("## Analyse des sentiments des utilisateurs", elem_classes="inpoda_title")
 
@@ -446,6 +456,8 @@ def make_model(tweets):
                                                                    user_publications_textbox,
                                                                    hashtag_publications_dropdown,
                                                                    hashtag_publications_textbox,
+                                                                   topic_publications_dropdown,
+                                                                   topic_publications_textbox,
                                                                    sentiment_radio,
                                                                    user_tweets_dropdown,
                                                                    user_tweets_dataframe,
