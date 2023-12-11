@@ -514,12 +514,3 @@ def make_model(tweets):
 
 
     interface.launch(favicon_path="favicon.png")
-
-
-    # countries = count_tweets_per_country(tweets)
-    # l, c, t = [], [], []
-    # for k in countries:
-    #     l.append(k)
-    #     c.append(countries[k][0])
-    #     t.append(countries[k][1])
-    # create_world_map(l, c, t)

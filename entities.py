@@ -95,10 +95,16 @@ def topEntities(k: int, entity: dict) -> dict:
 
 
 def count_tweets_per_country(tweets: list) -> dict:
-    # get the tweets' locations
+    """
+    Cette fonction permet de retourner un dictionnaire contenant le nombre de tweets par pays ainsi que le code alpha_3
+    de chaque pays.
+    :param tweets: Liste de tweets
+    :return locations: Dictionnaire des pays, avec pour valeurs une liste contenant le code alpha_3 et
+    le nombre de tweets du pays
+    """
     locations = {}
     for tweet in tweets:
-        if tweet.location != "" and tweet.location is not None:
+        if not (tweet.location == "" or tweet.location is None):
             for l in tweet.location.split():
                 l = l.replace(",", "").title()
 

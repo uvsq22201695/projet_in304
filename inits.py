@@ -6,6 +6,7 @@ def initialize(data: list):
     """
     Fonction permettant d'initialiser les données des tweets
     :param data: Liste des données
+    :return tweets: Liste d'objets de type Tweet
     """
     tweets = []  # Liste des tweets
     topics = [
