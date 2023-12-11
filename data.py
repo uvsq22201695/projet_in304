@@ -29,7 +29,7 @@ def create_data(name: str, data: list):
 
 def check(data: list):
     """
-    Cette fonction permet de vérifier si les données sont valides, c'est-à-dire si dans le fichier json il y a bien :
+    Cette fonction permet de vérifier si les données sont valides, c'est-à-dire si dans le fichier json, il y a bien :
     - Un champ "TweetText" qui contient le texte du tweet
     - Un champ "id" qui contient l'id du tweet
     :param data: Dictionnaire contenant les données

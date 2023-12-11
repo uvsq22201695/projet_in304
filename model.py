@@ -153,7 +153,7 @@ def make_model(tweets):
                 return ""
 
             return "L'utilisateur " + username + " a publié " + str(
-                temp["users"].get(username)["occurence"]) + " fois."
+                temp["users"].get(username)["occurrence"]) + " fois."
 
         def get_number_hashtag_publication(hashtag: str):
             """
@@ -166,7 +166,7 @@ def make_model(tweets):
                 return ""
 
             return "Le hashtag " + hashtag + " a été utilisé " + str(
-                temp["hashtags"].get(hashtag)["occurence"]) + " fois."
+                temp["hashtags"].get(hashtag)["occurrence"]) + " fois."
 
         def get_sentiment(choice: str):
             """

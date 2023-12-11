@@ -4,7 +4,7 @@ import pycountry
 USERS = "users"
 HASHTAGS = "hashtags"
 AROBASE = "arobase"
-OCCURENCE = "occurence"
+OCCURRENCE = "occurrence"
 POLARITY = "polarity"
 SUBJECTIVITY = "subjectivity"
 TOPICS = "topics"
@@ -48,7 +48,7 @@ def count_entity(entity: str, entity_dict: dict, entity_type: str, tweet: Tweet)
     """
 
     if entity in entity_dict:
-        entity_dict[entity][OCCURENCE] += 1
+        entity_dict[entity][OCCURRENCE] += 1
 
         if entity_type in (AROBASE, USERS, TOPICS):
             entity_dict[entity][ID].append(tweet.id)
@@ -59,7 +59,7 @@ def count_entity(entity: str, entity_dict: dict, entity_type: str, tweet: Tweet)
 
     else:
         entity_dict[entity] = {
-            OCCURENCE: 1
+            OCCURRENCE: 1
         }
 
         if entity_type in (AROBASE, USERS, TOPICS):
@@ -80,15 +80,15 @@ def topEntities(k: int, entity: dict) -> dict:
     """
 
     # On trie d'abord le dict hashtags par ordre décroissant
-    entities = dict(sorted(entity.items(), key=lambda item: item[1]["occurence"], reverse=True))
+    entities = dict(sorted(entity.items(), key=lambda item: item[1]["occurrence"], reverse=True))
 
-    # On crée un dictionnaire des k hashtags les plus utilisés avec leur occurence
+    # On crée un dictionnaire des k hashtags les plus utilisés avec leur occurrence
     top_entities = {}
 
     for i, e in enumerate(entities):
         if i == k:
             break
-        top_entities[e] = entities[e]["occurence"]
+        top_entities[e] = entities[e]["occurrence"]
 
     # On retourne les k entités les plus utilisés
     return top_entities
