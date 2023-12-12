@@ -52,3 +52,7 @@ Pour exécuter le programme, il faut lancer la cellule en bas du Jupyter Noteboo
 ## Diagramme décrivant l'architecture du programme
 
 ![Diagramme](diagramme.png)
+
+## Références
+
+[https://www.gradio.app/](https://www.gradio.app/) : Gradio est une librairie qui permet de créer des interfaces graphiques.
