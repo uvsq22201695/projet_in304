@@ -4,8 +4,8 @@
 
 ## Étudiants :
 
-* Alexandre François: [https://github.com/uvsq22201695](https://github.com/uvsq22201695)
-* Maël Fajon: [https://github.com/matronyme2](https://github.com/matronyme2)
+* Alexandre François (22201695) : [https://github.com/uvsq22201695](https://github.com/uvsq22201695)
+* Maël Fajon (22201144) : [https://github.com/matronyme2](https://github.com/matronyme2)
 
 ## Dépôt du projet GitHub :
 
